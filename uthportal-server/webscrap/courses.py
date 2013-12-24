@@ -7,10 +7,11 @@ import requests
 # UTH Server courses URL #
 coursesLink = 'http://inf-server.inf.uth.gr/courses/'
 
-########################################################################
-# Returns the BeautifulSoup HTML Tree
-########################################################################
 def GetTree(link):
+    """
+    Returns the BeautifulSoup HTML Tree
+    """
+
     # Download the webpage #
     webpage = requests.get( coursesLink + 'CE120/' )
 
@@ -20,20 +21,21 @@ def GetTree(link):
     # Return the tree #
     return tree
 
-########################################################################
-# COURSE     :    CE120 -> Προγραμματισμός Ι
-# HTML FORMAT:    <div class="announce">
-#                     <p>
-#                     <span class="date"> #date1# </span> #announce1#
-#                     </p>
-#                     <p>
-#                     <span class="date"> #date2# </span> #announce2#
-#                     </p>
-#                     ...
-#                 </div>
-# RETURN     :    List of tuples: [ (date1,announce1) , ... ]
-########################################################################
 def CE120():
+    """
+    COURSE     :    CE120 -> Προγραμματισμός Ι
+    HTML FORMAT:    <div class="announce">
+                        <p>
+                        <span class="date"> #date1# </span> #announce1#
+                        </p>
+                        <p>
+                        <span class="date"> #date2# </span> #announce2#
+                        </p>
+                        ...
+                    </div>
+    RETURN     :    List of tuples: [ (date1,announce1) , ... ]
+    """
+
     # Get the HTML tree #
     tree = GetTree(coursesLink + 'CE120/')
 
