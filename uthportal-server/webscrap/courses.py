@@ -16,10 +16,7 @@ def get_soup(link):
     """
 
     # download the webpage
-    webpage = requests.get(courses_link + 'CE120/')
-
-    # fix encoding issue
-    webpage.encoding = 'utf-8'
+    webpage = requests.get(link)
 
     # create a BeautifulSoup object
     soup = BeautifulSoup(webpage.content)
@@ -49,67 +46,6 @@ def CE120():
 
     # get the soup
     soup = get_soup(courses_link + 'CE120/')
-
-    # find the class announce
-    # soup.find(tag_name, attributes)
-    announce_class = soup.find('div', attrs = {'class':'announce'})
-
-    # parse the dates and create the list
-    date_elements = announce_class.findAll('span', attrs = {'class':'date'})
-    date_list = [date.text[:-1] for date in date_elements]
-
-    # parse the announcements and create the list
-    text_elements = announce_class.findAll('p')
-    text_list = list()
-
-    for element in text_elements:
-        if len(element.text) > 0:
-            text = unicode()
-            for block in element.contents[2:]:
-                if type(block) == Tag: # Tag -> BeautifulSoup.Tag
-                    text += block.text
-                else:
-                    text += block
-
-            text_list.append(text.strip())
-
-    # return the tuples
-    return [(date, text) for (date, text) in zip(date_list, text_list)]
-
-def ce232():
-    """
-    course: ce232 Computer Organization and Design
-
-    HTML format:
-    <html>
-
-    <h1>
-    Ανακοινώσεις
-    </h1>
-
-    <!-- begin content area -->
-    <dt> <b> date1 </b> </dt>
-    <dd> announcement1 </dd>
-    </dl>
-    <br/>
-
-    <dt> <b> date2 </b> </dt>
-    <dd> announcement2 </dd>
-    </dl>
-    <br/>
-
-    ...
-
-    <!-- end content area -->
-
-    </html>
-
-    return:
-    list of tuples: [(date1, announce1), ...]
-    """
-
-    # get the soup
-    soup = get_soup(courses_link + 'CE232/')
 
     # find the class announce
     # soup.find(tag_name, attributes)
