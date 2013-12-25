@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # this module contains functions used to scrap pages of courses residing on
-# the server at inf-server.inf.utf.gr
+# the server at inf-server.inf.uth.gr
 
 import requests
-from bs4 import BeautifulSoup, Tag
+from datetime import datetime
+from bs4 import BeautifulSoup
 
 # UTH courses server URL
 courses_link = 'http://inf-server.inf.uth.gr/courses/'
@@ -47,32 +48,31 @@ def CE120():
     # get the soup
     soup = get_soup(courses_link + 'CE120/')
 
-    # find the class announce
+    # find the 'announce' class which contains the announcements 
     # soup.find(tag_name, attributes)
     announce_class = soup.find('div', attrs = {'class':'announce'})
-
-    # parse the dates and create the list
-    date_elements = announce_class.findAll('span', attrs = {'class':'date'})
-    date_list = [date.text[:-1] for date in date_elements]
-
-    # parse the announcements and create the list
-    text_elements = announce_class.findAll('p')
-    text_list = list()
-
-    for element in text_elements:
-        if len(element.text) > 0:
-            text = unicode()
-            for block in element.contents[2:]:
-                if type(block) == Tag: # Tag -> BeautifulSoup.Tag
-                    text += block.text
-                else:
-                    text += block
-
-            text_list.append(text.strip())
-
-    # return the tuples
-    return [(date, text) for (date, text) in zip(date_list, text_list)]
-
+    
+    # Initialize an empty list
+    announce_list = list()    
+    
+    # Parse each announcement (which lies inside a <p> tag)
+    for announce in announce_class.findAll('p'):
+        if announce.text.strip(): # announcement not empty 
+            # Find when the date splits from the actual announcement
+            splitter = announce.text.find(':')
+            # Get the date and the announcement as strings
+            date_string = announce.text[:splitter].strip()
+            announce_string = announce.text[splitter+1:].strip()
+            
+            # Convert the date from string to datetime object
+            # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+            date = datetime.strptime(date_string,'%d/%m/%Y')
+            
+            # Add the new announcement as tuple to the list
+            announce_list.append( (date,announce_string) ) 
+            
+    # Return the list of announcements 
+    return announce_list
 
 ### testbench
 announcements = CE120()
