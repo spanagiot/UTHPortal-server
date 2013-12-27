@@ -3,7 +3,6 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 
-
 def fetch_courses(n_workers, timeout_secs, n_tries):
     import courses
     import gevent.queue
@@ -28,38 +27,38 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 
     # Greenlet function
     def crawl_page():
-            # If there are no other jobs
-            # NOTE: May be overkill
-            if task_queue.empty():
-                return
+        # If there are no other jobs
+        # NOTE: May be overkill
+        if task_queue.empty():
+            return
 
-            # Get the function that need to call
-            func = task_queue.get()
+        # Get the function that need to call
+        func = task_queue.get()
 
-            success = False # Was the job successfull?
-            error_list = list()
+        success = False # Was the job successfull?
+        error_list = list()
 
-            # Try to fetch data 'n_tries' times
-            for i in xrange(0,n_tries):
+        # Try to fetch data 'n_tries' times
+        for i in xrange(0,n_tries):
 
-                # Set the timeout
-                timeout = gevent.Timeout(timeout_secs)
-                timeout.start()
+            # Set the timeout
+            timeout = gevent.Timeout(timeout_secs)
+            timeout.start()
 
-                try:
-                    # Call the function to receive the data
-                    data = func()
+            try:
+                # Call the function to receive the data
+                data = func()
 
-                    # If something went wrong data is set to None
-                    if(data is not None):
-                        success = True
+                # If something went wrong data is set to None
+                if(data is not None):
+                    success = True
 
-                except Timeout: # Timout exception
-                    error_list.append('[%d] Timeout error: %lf secs' % (i,timeout_secs) )
-                except Exception as ex: # Other exception
-                    error_list.append(ex.message)
-                finally:
-                    timeout.cancel()
+            except Timeout: # Timout exception
+                error_list.append('[%d] Timeout error: %lf secs' % (i,timeout_secs) )
+            except Exception as ex: # Other exception
+                error_list.append(ex.message)
+            finally:
+                timeout.cancel()
 
             # If the call was successfull
             if success:
