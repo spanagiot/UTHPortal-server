@@ -83,7 +83,10 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 
     return courses_data
 
+# define a testbench function and run it if the module is run directly
+if __name__ == '__main__':
+    def testbench():
+        data = fetch_courses(1,10,3)
+        print data['CE120'][0][1]
 
-# testbench
-#data = fetch_courses(1,10,3)
-#print data['CE120'][0][1]
+    testbench()

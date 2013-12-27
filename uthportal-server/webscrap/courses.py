@@ -82,8 +82,12 @@ def CE120():
 # Add the courses to the dictionary
 courses_func['CE120'] = CE120
 
-### testbench
-#announcements = CE120()
-#for (date, text) in announcements:
-#    print(date)
-#    print(text + '\n')
+# define a testbench function and run it if the module is run directly
+if __name__ == '__main__':
+    def testbench():
+        announcements = CE120()
+        for (date, text) in announcements:
+            print(date)
+            print(text + '\n')
+
+    testbench()
