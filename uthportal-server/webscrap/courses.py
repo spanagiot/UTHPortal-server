@@ -15,19 +15,19 @@ courses_link = 'http://inf-server.inf.uth.gr/courses/'
 # Initialize as an empty dictionary
 courses_func = dict()
 
-def get_soup(link):
+def get_bsoup(link):
     """
     get the HTML of the page, create and return the BeautifulSoup object
     """
 
-    # download the webpage
+    # get the webpage
     webpage = requests.get(link)
 
     # create a BeautifulSoup object
-    soup = BeautifulSoup(webpage.content)
+    bsoup = BeautifulSoup(webpage.content)
 
-    # return the soup
-    return soup
+    # return the BeautifulSoup object
+    return bsoup
 
 def CE120():
     """
@@ -49,12 +49,12 @@ def CE120():
     """
     #print __name__
 
-    # get the soup
-    soup = get_soup(courses_link + 'CE120/')
+    # get the BeautifulSoup object
+    bsoup = get_bsoup(courses_link + 'CE120/')
 
     # find the 'announce' class which contains the announcements
-    # soup.find(tag_name, attributes)
-    announce_class = soup.find('div', attrs = {'class':'announce'})
+    # bsoup.find(tag_name, attributes)
+    announce_class = bsoup.find('div', attrs = {'class':'announce'})
 
     # Initialize an empty list
     announce_list = list()
@@ -71,10 +71,10 @@ def CE120():
 
             # Convert the date from string to datetime object
             # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
-            date = datetime.strptime(date_string,'%d/%m/%Y')
+            date = datetime.strptime(date_string, '%d/%m/%Y')
 
             # Add the new announcement as tuple to the list
-            announce_list.append( (date,announce_string) )
+            announce_list.append( (date, announce_string) )
 
     # Return the list of announcements
     return announce_list
