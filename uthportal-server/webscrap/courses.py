@@ -11,6 +11,10 @@ from bs4 import BeautifulSoup
 # UTH courses server URL
 courses_link = 'http://inf-server.inf.uth.gr/courses/'
 
+# Dictionary that maps course names to functions
+# Initialize as an empty dictionary 
+courses_func = dict() 
+
 def get_soup(link):
     """
     get the HTML of the page, create and return the BeautifulSoup object
@@ -24,7 +28,6 @@ def get_soup(link):
 
     # return the soup
     return soup
-
 
 def CE120():
     """
@@ -44,7 +47,8 @@ def CE120():
     return:
     list of tuples: [(date1, announce1), ...]
     """
-
+    #print __name__
+    
     # get the soup
     soup = get_soup(courses_link + 'CE120/')
 
@@ -60,6 +64,7 @@ def CE120():
         if announce.text.strip(): # announcement not empty 
             # Find when the date splits from the actual announcement
             splitter = announce.text.find(':')
+            
             # Get the date and the announcement as strings
             date_string = announce.text[:splitter].strip()
             announce_string = announce.text[splitter+1:].strip()
@@ -70,12 +75,18 @@ def CE120():
             
             # Add the new announcement as tuple to the list
             announce_list.append( (date,announce_string) ) 
-            
+	
     # Return the list of announcements 
     return announce_list
 
+
+# Add the courses to the dictionary
+courses_func['CE120'] = CE120
+
 ### testbench
-announcements = CE120()
-for (date, text) in announcements:
-    print(date)
-    print(text + '\n')
+#announcements = CE120()
+#for (date, text) in announcements:
+#    print(date)
+#    print(text + '\n')
+
+
