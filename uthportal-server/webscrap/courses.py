@@ -88,6 +88,6 @@ if __name__ == '__main__':
         announcements = CE120()
         for (date, text) in announcements:
             print(date)
-            print(text + '\n')
+            print(text.encode('utf-8') + '\n')
 
     testbench()
