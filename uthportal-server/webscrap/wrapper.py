@@ -1,5 +1,9 @@
-# Import gevent.monkey and apply
-# the patch for async operations
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# asynchronous scrapping wrapper
+
+# import gevent.monkey and apply the patch for async operations
 import gevent.monkey
 gevent.monkey.patch_all()
 
@@ -39,7 +43,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
         error_list = list()
 
         # Try to fetch data 'n_tries' times
-        for i in xrange(0,n_tries):
+        for i in xrange(0, n_tries):
 
             # Set the timeout
             timeout = gevent.Timeout(timeout_secs)
@@ -50,7 +54,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
                 data = func()
 
                 # If something went wrong data is set to None
-                if(data is not None):
+                if (data is not None):
                     success = True
 
             except Timeout: # Timout exception
@@ -68,7 +72,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
                 #error_messages[func.__name__] = error_list
 
     # Spawn workers till there are no more tasks
-    while( not task_queue.empty() ):
+    while ( not task_queue.empty() ):
         gevent.sleep(0.1)
 
         # Find the best number of workers to spawn
@@ -86,7 +90,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 # define a testbench function and run it if the module is run directly
 if __name__ == '__main__':
     def testbench():
-        data = fetch_courses(1,10,3)
-        print data['CE120'][0][1]
+        data = fetch_courses(1, 10, 3)
+        print(data['CE120'][0][1].encode('utf-8'))
 
     testbench()

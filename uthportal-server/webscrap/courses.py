@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# this module contains functions used to scrap pages of courses residing on
-# the server at inf-server.inf.uth.gr
+# scrapping functions of courses residing on the server at inf-server.inf.uth.gr
 
 import requests
 from datetime import datetime
