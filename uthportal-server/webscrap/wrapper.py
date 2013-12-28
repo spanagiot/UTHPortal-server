@@ -7,6 +7,7 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 
+
 def fetch_courses(n_workers, timeout_secs, n_tries):
     import courses
     import gevent.queue
@@ -86,6 +87,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     worker_pool.join()
 
     return courses_data
+
 
 # define a testbench function and run it if the module is run directly
 if __name__ == '__main__':

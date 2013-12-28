@@ -14,6 +14,7 @@ courses_link = 'http://inf-server.inf.uth.gr/courses/'
 # Initialize as an empty dictionary
 courses_func = dict()
 
+
 def get_bsoup(link):
     """
     get the HTML of the page, create and return the BeautifulSoup object
@@ -27,6 +28,7 @@ def get_bsoup(link):
 
     # return the BeautifulSoup object
     return bsoup
+
 
 def CE120():
     """
@@ -78,8 +80,10 @@ def CE120():
     # Return the list of announcements
     return announce_list
 
+
 # Add the courses to the dictionary
 courses_func['CE120'] = CE120
+
 
 # define a testbench function and run it if the module is run directly
 if __name__ == '__main__':
