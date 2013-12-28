@@ -68,7 +68,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
             if success:
                 courses_data[func.__name__] = data
             else:
-                print error_list
+                print(error_list)
                 #error_messages[func.__name__] = error_list
 
     # Spawn workers till there are no more tasks
@@ -91,6 +91,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 if __name__ == '__main__':
     def testbench():
         data = fetch_courses(1, 10, 3)
+        print(data['CE120'][0][0].date())
         print(data['CE120'][0][1].encode('utf-8'))
 
     testbench()
