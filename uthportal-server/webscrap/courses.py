@@ -69,7 +69,7 @@ def CE120():
 
             # Get the date and the announcement as strings
             date_string = announce.text[:splitter].strip()
-            announce_string = announce.text[splitter+1:].strip()
+            announce_string = announce.text[splitter + 1:].encode('utf-8').strip()
 
             # Convert the date from string to datetime object
             # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
@@ -152,7 +152,7 @@ if __name__ == '__main__':
         announcements = CE120()
         for (date, text) in announcements:
             print(date.date())
-            print(text.encode('utf-8') + '\n')
+            print(text + '\n')
 
     #testbench()
 
