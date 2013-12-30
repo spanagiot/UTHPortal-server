@@ -77,7 +77,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     # Spawn workers till there are no more tasks
     while ( not task_queue.empty() ):
         # TODO
-        # does this introduce a delay? how can we mitigate it?
+        # does this introduce a delay? if yes, can we mitigate it?
         gevent.sleep(0.1)
         #gevent.sleep(0)
 
@@ -98,9 +98,9 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 if __name__ == '__main__':
     def testbench():
         data = fetch_courses(2, 10, 3)
-        print(data['ce120'][0][0].date())
-        print(data['ce120'][0][1])
-        print(data['ce232'][5][0].date())
-        print(data['ce232'][5][1])
+        print(data['ce120'][-13][0].date())
+        print(data['ce120'][-13][1])
+        print(data['ce232'][-5][0].date())
+        print(data['ce232'][-5][1])
 
     testbench()
