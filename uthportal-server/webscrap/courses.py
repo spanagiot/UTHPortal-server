@@ -202,21 +202,27 @@ courses_func['ce120'] = ce120
 courses_func['ce232'] = ce232
 
 
-# define a testbench function and run it if the module is run directly
+# testing code to be run when the module is run directly
+# NOTE
+# should all tests be off the file/module to be tested?
 if __name__ == '__main__':
-    def testbench():
-        announcements = CE120()
-        for (date, text) in announcements:
-            print(date.date())
-            print(text + '\n')
+    debug = True
 
-    #testbench()
+    ce120_announcements = ce120()
+    ce232_announcements = ce232()
 
-    def test_ce232():
-        announcements = ce232()
+    def print_all(announcements):
         for (date, content) in announcements:
             print(date.date())
             print(content)
             print('')
 
-    #test_ce232()
+    def print_single(announcements, index):
+        print(announcements[index][0].date())
+        print(announcements[index][1])
+
+    #print_all(ce120_announcements)
+    print_single(ce120_announcements, -13)
+
+    #print_all(ce232_announcements)
+    print_single(ce232_announcements, -5)
