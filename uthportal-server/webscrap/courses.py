@@ -10,6 +10,8 @@ import re
 import requests
 import unicodedata
 
+debug = False
+
 # course parsing function dictionary
 # NOTE
 # a course may have more than one page with data. how do we generalize this
