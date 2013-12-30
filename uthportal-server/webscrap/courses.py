@@ -1,39 +1,92 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# scrapping functions of courses residing on the server at inf-server.inf.uth.gr
+# parsing functions of course pages
 
-import requests
-from datetime import datetime
 from bs4 import BeautifulSoup
+from datetime import datetime
+import os
+import re
+import requests
+import unicodedata
+
+# course parsing function dictionary
+# NOTE
+# a course may have more than one page with data. how do we generalize this
+# dictionary? should we introduce a "course" class, that will also contain links
+# and information about each course?
+courses_func = {}
 
 
-# UTH courses server URL
-courses_link = 'http://inf-server.inf.uth.gr/courses/'
-
-# Dictionary that maps course names to functions
-# Initialize as an empty dictionary
-courses_func = dict()
-
-
-def get_bsoup(link):
+# initially copied from
+# https://github.com/django/django/blob/master/django/utils/text.py
+# NOTE
+# this could be a better option
+# https://pypi.python.org/pypi/python-slugify
+# https://github.com/un33k/python-slugify
+def slugify(value):
     """
-    get the HTML of the page, create and return the BeautifulSoup object
+    Converts to lowercase, removes non-word characters (alphanumerics and
+    underscores) and converts spaces to hyphens. Also strips leading and
+    trailing whitespace.
+    """
+    value = unicode(value)
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = value.decode('ascii')
+    # replace characters using regular expressions
+    # http://docs.python.org/2/library/re.html
+    value = re.sub('[^\w\s\.-]', '_', value).strip().lower()
+    value = re.sub('_+', '_', value).strip('_')
+    value = re.sub('[-\s]+', '-', value)
+    return value
+
+
+def fetch_html(link):
+    """
+    fetch the html of the page, store it on the disk, return it as a string
+
+    http://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files
+    http://docs.python.org/2/library/functions.html#open
+
+    NOTE
+    maybe add an option to store the html in the database
+
+    NOTE
+    should the string be a unicode one?
     """
 
-    # get the webpage
-    webpage = requests.get(link)
+    filename = slugify(link) + '.html'
 
-    # create a BeautifulSoup object
-    bsoup = BeautifulSoup(webpage.content)
+    # on debugging and the existence of the file with the page html
+    if debug and os.path.exists(filename):
+        # open the file as read-only
+        f = open(filename, 'r')
+        # get the html from the file
+        html = f.read()
+    else:
+        # fetch the page
+        page = requests.get(link)
+        # TODO
+        # error checking
 
-    # return the BeautifulSoup object
-    return bsoup
+        # store the page on the disk
+        # NOTE
+        # race condition. should we protect against it?
+        # open or create the file for writing
+        f = open(filename, 'w+')
+        html = page.content
+        f.write(html)
+
+    # close the file
+    f.close()
+
+    # return the html string
+    return html
 
 
-def CE120():
+def ce120():
     """
-    course: CE120 : Προγραμματισμός 1
+    course: ce120 : Προγραμματισμός 1
 
     HTML format:
         <div class="announce">
@@ -51,8 +104,11 @@ def CE120():
     """
     #print __name__
 
-    # get the BeautifulSoup object
-    bsoup = get_bsoup(courses_link + 'CE120/')
+    # get the html of the page
+    html = fetch_html('http://inf-server.inf.uth.gr/courses/CE120/')
+
+    # create a BeautifulSoup object
+    bsoup = BeautifulSoup(html)
 
     # find the 'announce' class which contains the announcements
     # bsoup.find(tag_name, attributes)
@@ -69,7 +125,7 @@ def CE120():
 
             # Get the date and the announcement as strings
             date_string = announce.text[:splitter].strip()
-            announce_string = announce.text[splitter + 1:].encode('utf-8').strip()
+            announce_string = announce.text[splitter+1:].encode('utf-8').strip()
 
             # Convert the date from string to datetime object
             # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
@@ -110,8 +166,11 @@ def ce232():
     list of tuples: [(date1, announce1), ...]
     """
 
-    # get the BeautifulSoup object
-    bsoup = get_bsoup(courses_link + 'CE232/')
+    # get the html of the page
+    html = fetch_html('http://inf-server.inf.uth.gr/courses/CE232/')
+
+    # create a BeautifulSoup object
+    bsoup = BeautifulSoup(html)
 
     # create a list of the announcement dates
     dates_raw = [date.find('b').text.strip() for date in bsoup.find_all('dt')]
@@ -129,20 +188,20 @@ def ce232():
 
     contents = []
 
-    # create a list of the announcement raw html contents
+    # create a list of the announcement html contents
     dd_contents = bsoup.find_all('dd')
     for dd_elements in dd_contents:
         content = ''
         for element in dd_elements:
             content += element.encode('utf-8')
-        contents.append(content.strip())
+        contents.append( content.strip() )
 
     # return the date/content tuples
     return zip(dates, contents)
 
 
-# Add the courses to the dictionary
-courses_func['CE120'] = CE120
+# add the course scrapping functions to the dictionary
+courses_func['ce120'] = ce120
 courses_func['ce232'] = ce232
 
 
