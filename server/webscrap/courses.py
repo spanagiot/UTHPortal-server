@@ -111,7 +111,7 @@ def ce120():
 
     # find the 'announce' class which contains the announcements
     # bsoup.find(tag_name, attributes)
-    announce_class = bsoup.find('div', attrs = {'class':'announce'})
+    announce_class = bsoup.find('div', class_ = 'announce')
 
     # Initialize an empty list
     announce_list = list()
