@@ -32,7 +32,6 @@ def ce120(bsoup):
         </div>
 
     return:
-    list of dictionaries: [ {'date':date1, 'html':announce1 }, ...]
     """
     
     # find the 'announce' class which contains the announcements
@@ -60,7 +59,7 @@ def ce120(bsoup):
         announce_html = (''.join( parts )).strip()
         
         # Add the new announcement as dictionary
-        announce_list.append( {'date':date, 'html':announce_html } )
+        announce_list.append( (date, announce_html) )
     
     # Return the list of announcements
     return announce_list

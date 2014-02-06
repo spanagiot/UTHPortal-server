@@ -33,7 +33,7 @@ def slugify(value):
     return value
 
 
-def fetch_html(link):
+def fetch_html(link, timeout=5.0):
     """
     fetch the html of the page, store it on the disk, return it as a string
 
@@ -61,7 +61,7 @@ def fetch_html(link):
     """
     
     # fetch the page
-    page = requests.get(link)
+    page = requests.get(link, timeout=timeout)
     # TODO: Error handling
     
     # store the page on the disk

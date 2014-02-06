@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # TODO:
+# Get proper link for courses
 # Logging and testing
 
 # asynchronous scrapping wrapper
@@ -13,11 +14,11 @@ gevent.monkey.patch_all()
 def fetch_courses(n_workers, timeout_secs, n_tries):
     """
     """
-    from announcements import parsing_func
-    from .util import fetch_html, get_bsoup
+    from courses.announcements import parsing_func
+    from util import fetch_html, get_bsoup
     import gevent.queue
     import gevent.pool
-
+    
     # Initialize an empty queue to hold the tasks
     task_queue = gevent.queue.Queue()
 
@@ -41,29 +42,33 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
         except gevent.queue.Empty:
             return
         
+        # Read from DB link to course
+        link = 'http://inf-server.inf.uth.gr/courses/CE120/'
+        
         # Try to fetch_html 'n_tries'
-        for i in xrange(0, n_tries):            
-            html = fetch_html(timeout_secs)
+        for i in xrange(n_tries):            
+            html = fetch_html(link, timeout=timeout_secs)
             
-            if not isinstance(html,None):
+            if html is not None:
                 break
             elif i is n_tries - 1:
                 return
         
         # Get BeautifulSoup Object
         bsoup = get_bsoup(html)
-        if isinstance(html,None):
+        if bsoup is None:
             return
         
         # Parse the html and return the data
+        data = None
         try:
-            data = parsing_func[course_name]()
+            data = parsing_func[course_name](bsoup)
         except Exception as ex:
-            pass
-
+            print ex.message
+        
         # If data are valid
-        if not isinstance(html, None):
-            courses_data[course_name] = data
+        if data is not None:
+            announcements[course_name] = data
 
     # Spawn workers till there are no more tasks
     while ( not task_queue.empty() ):
@@ -82,17 +87,17 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     # Wait for all the workers to finish
     worker_pool.join()
 
-    return courses_data
+    return announcements
 
-"""
+
 # define a testbench function and run it if the module is run directly
 if __name__ == '__main__':
     def testbench():
         data = fetch_courses(2, 10, 3)
         print(data['ce120'][-13][0].date())
         print(data['ce120'][-13][1])
-        print(data['ce232'][-5][0].date())
-        print(data['ce232'][-5][1])
+        #print(data['ce232'][-5][0].date())
+        #print(data['ce232'][-5][1])
 
     testbench()
-"""
+
