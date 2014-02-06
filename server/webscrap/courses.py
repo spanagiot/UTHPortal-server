@@ -3,12 +3,10 @@
 
 # parsing functions of course pages
 
+from util import slugify, fetch_html
+
 from bs4 import BeautifulSoup
 from datetime import datetime
-import os
-import re
-import requests
-import unicodedata
 
 debug = False
 
@@ -18,70 +16,6 @@ debug = False
 # dictionary? should we introduce a "course" class, that will also contain links
 # and information about each course?
 courses_func = {}
-
-
-def slugify(value):
-    """
-    convert to lowercase, remove non valid characters (alphanumeric, dot,
-    dash, and underscore), convert spaces to hyphens, and strip leading
-    and trailing whitespace.
-
-    initially copied from
-    https://github.com/django/django/blob/master/django/utils/text.py
-    since customized to own specifications
-    """
-    value = unicode(value)
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = value.decode('ascii')
-
-    # replace characters using regular expressions
-    # http://docs.python.org/2/library/re.html
-    value = re.sub('[^\w\s\.-]', '_', value).strip().lower()
-    value = re.sub('_+', '_', value).strip('_')
-    value = re.sub('[-\s]+', '-', value)
-    return value
-
-
-def fetch_html(link):
-    """
-    fetch the html of the page, store it on the disk, return it as a string
-
-    http://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files
-    http://docs.python.org/2/library/functions.html#open
-
-    NOTE
-    maybe add an option to store the html in the database
-
-    NOTE
-    should the string be a unicode one?
-    """
-
-    filename = slugify(link) + '.html'
-
-    # if we are debugging and the file with the page html exists on the disk
-    if debug and os.path.exists(filename):
-        # open the file as read-only
-        f = open(filename, 'r')
-        # get the html from the file
-        html = f.read()
-    else:
-        # fetch the page
-        page = requests.get(link)
-        # TODO
-        # error checking
-
-        # store the page on the disk
-        # open or create the file for writing
-        f = open(filename, 'w+')
-        html = page.content
-        f.write(html)
-
-    # close the file
-    f.close()
-
-    # return the html string
-    return html
-
 
 def ce120():
     """
@@ -101,7 +35,6 @@ def ce120():
     return:
     list of tuples: [(date1, announce1), ...]
     """
-    #print __name__
 
     # get the html of the page
     html = fetch_html('http://inf-server.inf.uth.gr/courses/CE120/')
