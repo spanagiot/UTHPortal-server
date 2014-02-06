@@ -7,6 +7,7 @@ from util import slugify, fetch_html
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+import string
 
 debug = False
 
@@ -33,7 +34,7 @@ def ce120():
         </div>
 
     return:
-    list of tuples: [(date1, announce1), ...]
+    list of dictionaries: [ {'date':date1, 'html':announce1 }, ...]
     """
 
     # get the html of the page
@@ -48,24 +49,27 @@ def ce120():
 
     # Initialize an empty list
     announce_list = list()
-
-    # Parse each announcement (which lies inside a <p> tag)
-    for announce in announce_class.findAll('p'):
-        if announce.text.strip(): # announcement not empty
-            # Find when the date splits from the actual announcement
-            splitter = announce.text.find(':')
-
-            # Get the date and the announcement as strings
-            date_string = announce.text[:splitter].strip()
-            announce_string = announce.text[splitter+1:].encode('utf-8').strip()
-
-            # Convert the date from string to datetime object
-            # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
-            date = datetime.strptime(date_string, '%d/%m/%Y')
-
-            # Add the new announcement as tuple to the list
-            announce_list.append( (date, announce_string) )
-
+    
+    # Parse each announcement
+    for announce in announce_class.findAll('span', class_ = 'date'):
+        # Get date, remove any unwanted punctuation and convert to datetime
+        # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+        date_string = announce.text.strip(string.punctuation)
+        date = datetime.strptime(date_string , '%d/%m/%Y')
+        
+        # Get the parts of the announcement
+        parts = list()
+        for part in announce.next_siblings:
+            if part.name is 'span' or part.name is 'p':
+                break
+            parts.append( unicode(part) )
+        
+        # Covert list to unicode
+        announce_html = (''.join( parts )).strip()
+        
+        # Add the new announcement as dictionary
+        announce_list.append( {'date':date, 'html':announce_html } )
+    
     # Return the list of announcements
     return announce_list
 
@@ -123,7 +127,7 @@ def ce232():
     # create a list of the announcement html contents
     dd_contents = bsoup.find_all('dd')
     for dd_elements in dd_contents:
-        content = ''
+        content = u''
         for element in dd_elements:
             content += element.encode('utf-8')
         contents.append( content.strip() )
@@ -144,6 +148,7 @@ if __name__ == '__main__':
     debug = True
 
     ce120_announcements = ce120()
+    """
     ce232_announcements = ce232()
 
     def print_all(announcements):
@@ -161,3 +166,4 @@ if __name__ == '__main__':
 
     #print_all(ce232_announcements)
     print_single(ce232_announcements, -5)
+    """
