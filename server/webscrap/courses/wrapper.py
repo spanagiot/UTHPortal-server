@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# TODO:
+# Logging and testing
+
 # asynchronous scrapping wrapper
 
 # import gevent.monkey and apply the patch for async operations
 import gevent.monkey
 gevent.monkey.patch_all()
 
-
 def fetch_courses(n_workers, timeout_secs, n_tries):
     """
     """
-    import courses
+    from announcements import parsing_func
+    from .util import fetch_html, get_bsoup
     import gevent.queue
     import gevent.pool
 
@@ -23,56 +26,44 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 
     # Initialize a dictionary that holds results from greenlets
     # { name_of_course: data_fetched, ... }
-    courses_data = {}
-
-    # Initialize an error message dictionary
-    error_messages = {}
+    announcements = dict()
 
     # Enqueue the tasks
-    for func in courses.courses_func.values():
-        task_queue.put(func)
-
+    for course_name in parsing_func.keys():
+        task_queue.put(course_name)
+    
     # Greenlet function
     def crawl_page():
-        # If there are no other jobs
-        # NOTE: May be overkill
-        if task_queue.empty():
+
+        # Get the course name, or exit if no left in queue
+        try:
+            course_name = task_queue.get()
+        except gevent.queue.Empty:
             return
+        
+        # Try to fetch_html 'n_tries'
+        for i in xrange(0, n_tries):            
+            html = fetch_html(timeout_secs)
+            
+            if not isinstance(html,None):
+                break
+            elif i is n_tries - 1:
+                return
+        
+        # Get BeautifulSoup Object
+        bsoup = get_bsoup(html)
+        if isinstance(html,None):
+            return
+        
+        # Parse the html and return the data
+        try:
+            data = parsing_func[course_name]()
+        except Exception as ex:
+            pass
 
-        # Get the function that need to call
-        func = task_queue.get()
-
-        success = False  # Was the job successful?
-        error_list = list()
-
-        # Try to fetch data 'n_tries' times
-        for i in xrange(0, n_tries):
-
-            # Set the timeout
-            timeout = gevent.Timeout(timeout_secs)
-            timeout.start()
-
-            try:
-                # Call the function to receive the data
-                data = func()
-
-                # If something went wrong data is set to None
-                if (data is not None):
-                    success = True
-
-            except Timeout:  # Timeout exception
-                error_list.append('[%d] Timeout error: %lf secs' % (i,timeout_secs) )
-            except Exception as ex:  # Other exception
-                error_list.append(ex.message)
-            finally:
-                timeout.cancel()
-
-            # If the call was successful
-            if success:
-                courses_data[func.__name__] = data
-            else:
-                print(error_list)
-                #error_messages[func.__name__] = error_list
+        # If data are valid
+        if not isinstance(html, None):
+            courses_data[course_name] = data
 
     # Spawn workers till there are no more tasks
     while ( not task_queue.empty() ):
@@ -93,7 +84,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 
     return courses_data
 
-
+"""
 # define a testbench function and run it if the module is run directly
 if __name__ == '__main__':
     def testbench():
@@ -104,3 +95,4 @@ if __name__ == '__main__':
         print(data['ce232'][-5][1])
 
     testbench()
+"""

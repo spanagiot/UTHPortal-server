@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# TODO:
+# Logging & Error handling
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -70,3 +73,6 @@ def fetch_html(link):
     # return the html string
     return html
 
+def get_bsoup(html):
+    
+    return BeautifulSoup(html)

@@ -3,8 +3,6 @@
 
 # parsing functions of course pages
 
-from util import slugify, fetch_html
-
 from bs4 import BeautifulSoup
 from datetime import datetime
 import string
@@ -16,9 +14,9 @@ debug = False
 # a course may have more than one page with data. how do we generalize this
 # dictionary? should we introduce a "course" class, that will also contain links
 # and information about each course?
-courses_func = {}
+parsing_func = {}
 
-def ce120():
+def ce120(bsoup):
     """
     course: ce120 : Προγραμματισμός 1
 
@@ -36,13 +34,7 @@ def ce120():
     return:
     list of dictionaries: [ {'date':date1, 'html':announce1 }, ...]
     """
-
-    # get the html of the page
-    html = fetch_html('http://inf-server.inf.uth.gr/courses/CE120/')
-
-    # create a BeautifulSoup object
-    bsoup = BeautifulSoup(html)
-
+    
     # find the 'announce' class which contains the announcements
     # bsoup.find(tag_name, attributes)
     announce_class = bsoup.find('div', class_ = 'announce')
@@ -74,7 +66,7 @@ def ce120():
     return announce_list
 
 
-def ce232():
+def ce232(bsoup):
     """
     course: ce232 : Computer Organization and Design
 
@@ -101,12 +93,6 @@ def ce232():
     return:
     list of tuples: [(date1, announce1), ...]
     """
-
-    # get the html of the page
-    html = fetch_html('http://inf-server.inf.uth.gr/courses/CE232/')
-
-    # create a BeautifulSoup object
-    bsoup = BeautifulSoup(html)
 
     # create a list of the announcement dates
     dates_raw = [date.find('b').text.strip() for date in bsoup.find_all('dt')]
@@ -136,19 +122,19 @@ def ce232():
     return zip(dates, contents)
 
 
-# add the course scrapping functions to the dictionary
-courses_func['ce120'] = ce120
-courses_func['ce232'] = ce232
+# add the course parsing functions to the dictionary
+parsing_func['ce120'] = ce120
+parsing_func['ce232'] = ce232
 
-
+"""
 # testing code to be run when the module is run directly
 # NOTE
 # should all tests be off the file/module to be tested?
 if __name__ == '__main__':
     debug = True
-
+    
     ce120_announcements = ce120()
-    """
+    
     ce232_announcements = ce232()
 
     def print_all(announcements):
@@ -166,4 +152,4 @@ if __name__ == '__main__':
 
     #print_all(ce232_announcements)
     print_single(ce232_announcements, -5)
-    """
+"""
