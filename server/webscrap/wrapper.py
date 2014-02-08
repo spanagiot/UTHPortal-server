@@ -11,6 +11,9 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 
+from pymongo import MongoClient
+client = MongoClient()
+
 def fetch_courses(n_workers, timeout_secs, n_tries):
     """
     """
@@ -43,7 +46,22 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
             return
         
         # Read from DB link to course
-        link = 'http://inf-server.inf.uth.gr/courses/CE120/'
+        try:
+            records = client.uthportal.courses.find( {'code': course_name} )
+            
+            if records.count() is 0:
+                # TODO: error
+                return
+            if records.count() > 1:
+                # TODO: warning
+                pass
+            
+            link = records[0].link
+            #print link
+        except Exception as ex:
+            print ex.message
+            return
+        
         
         # Try to fetch_html 'n_tries'
         for i in xrange(n_tries):            
@@ -86,7 +104,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 
     # Wait for all the workers to finish
     worker_pool.join()
-
+    
     return announcements
 
 
@@ -94,8 +112,8 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 if __name__ == '__main__':
     def testbench():
         data = fetch_courses(2, 10, 3)
-        print(data['ce120'][-13][0].date())
-        print(data['ce120'][-13][1])
+        #print(data['ce120'][-13][0].date())
+        #print(data['ce120'][-13][1])
         #print(data['ce232'][-5][0].date())
         #print(data['ce232'][-5][1])
 
