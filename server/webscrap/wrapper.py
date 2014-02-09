@@ -62,7 +62,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
             if link is None:
                 # TODO: error
                 pass
-            
+                
         except Exception as ex:
             print ex.message
             return
@@ -92,7 +92,8 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
         
         # If data are valid update the db
         if data is not None:
-            update_query = { '$set': { 'announcements': { 'items': data } } }
+            print course_name
+            update_query = { '$set': { 'announcements.items': data  } }
             db.inf.courses.update(query, update_query)
 
     # Spawn workers till there are no more tasks
@@ -116,7 +117,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 # define a testbench function and run it if the module is run directly
 if __name__ == '__main__':
     def testbench():
-        data = fetch_courses(2, 10, 3)
+        data = fetch_courses(1, 10, 3)
         #print(data['ce120'][-13][0].date())
         #print(data['ce120'][-13][1])
         #print(data['ce232'][-5][0].date())
