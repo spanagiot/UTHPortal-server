@@ -28,36 +28,42 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     # Initialize a pool of 'n_workers' greenlets
     worker_pool = gevent.pool.Pool(n_workers)
 
-    # Initialize a dictionary that holds results from greenlets
-    # { name_of_course: data_fetched, ... }
-    announcements = dict()
-
     # Enqueue the tasks
-    for course_name in parsing_func.keys():
-        task_queue.put(course_name)
+    task_queue.put('CE120')
+    #for course_name in parsing_func.keys():
+     #   task_queue.put(course_name)
     
     # Greenlet function
     def crawl_page():
-
+        
         # Get the course name, or exit if no left in queue
         try:
             course_name = task_queue.get()
         except gevent.queue.Empty:
             return
         
+        # Get the database
+        db = client.uthportal
+        
+        # Set the query
+        query = {'code': course_name}
+        
         # Read from DB link to course
         try:
-            records = client.uthportal.courses.find( {'code': course_name} )
+            records = db.inf.courses.find(query)
             
             if records.count() is 0:
                 # TODO: error
-                return
+                pass
             if records.count() > 1:
                 # TODO: warning
                 pass
             
-            link = records[0].link
-            #print link
+            link = records[0]['announcements']['link']
+            if link is None:
+                # TODO: error
+                pass
+            
         except Exception as ex:
             print ex.message
             return
@@ -80,13 +86,15 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
         # Parse the html and return the data
         data = None
         try:
-            data = parsing_func[course_name](bsoup)
+            data = parsing_func[course_name.lower()](bsoup)
         except Exception as ex:
             print ex.message
         
-        # If data are valid
+        
+        # If data are valid update the db
         if data is not None:
-            announcements[course_name] = data
+            update_query = { '$set': { 'announcements': { 'items': data } } }
+            db.inf.courses.update(query, update_query)
 
     # Spawn workers till there are no more tasks
     while ( not task_queue.empty() ):
@@ -104,8 +112,6 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
 
     # Wait for all the workers to finish
     worker_pool.join()
-    
-    return announcements
 
 
 # define a testbench function and run it if the module is run directly

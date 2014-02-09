@@ -46,6 +46,9 @@ def fetch_course_info(link):
     return info
 
 
+def update_course_info(info):
+    pass
+
 # testing code
 if __name__ == '__main__':
     links_list = fetch_course_links()

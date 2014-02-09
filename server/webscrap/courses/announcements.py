@@ -9,6 +9,9 @@ import string
 
 debug = False
 
+# TODO: All functions return a list of dicts in the format:
+# { 'date':date, 'html':html, 'has_time': 0/1 } 
+
 # course parsing function dictionary
 # NOTE
 # a course may have more than one page with data. how do we generalize this
@@ -30,8 +33,6 @@ def ce120(bsoup):
             </p>
             ...
         </div>
-
-    return:
     """
     
     # find the 'announce' class which contains the announcements
@@ -59,7 +60,7 @@ def ce120(bsoup):
         announce_html = (''.join( parts )).strip()
         
         # Add the new announcement as dictionary
-        announce_list.append( (date, announce_html) )
+        announce_list.append( {'date':date, 'html':announce_html, 'has_time':'0' } )
     
     # Return the list of announcements
     return announce_list
