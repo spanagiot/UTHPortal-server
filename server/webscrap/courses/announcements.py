@@ -60,7 +60,7 @@ def ce120(bsoup):
         announce_html = (''.join( parts )).strip()
         
         # Add the new announcement as dictionary
-        announce_list.append( {'date':date, 'html':announce_html, 'has_time':'0' } )
+        announce_list.append( {'date':date, 'html':announce_html, 'has_time': 0 } )
     
     # Return the list of announcements
     return announce_list
@@ -89,9 +89,6 @@ def ce232(bsoup):
         ...
 
         <!-- end content area -->
-
-    return:
-    list of tuples: [(date1, announce1), ...]
     """
 
     # create a list of the announcement dates
@@ -119,7 +116,7 @@ def ce232(bsoup):
         contents.append( content.strip() )
 
     # return the date/content tuples
-    return zip(dates, contents)
+    return [ {'date':date, 'html':html, 'has_time': 0} for (date,html) in zip(dates,contents) ]
 
 
 # add the course parsing functions to the dictionary

@@ -29,9 +29,8 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     worker_pool = gevent.pool.Pool(n_workers)
 
     # Enqueue the tasks
-    task_queue.put('CE120')
-    #for course_name in parsing_func.keys():
-     #   task_queue.put(course_name)
+    for course_name in parsing_func.keys():
+        task_queue.put(course_name)
     
     # Greenlet function
     def crawl_page():
@@ -46,7 +45,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
         db = client.uthportal
         
         # Set the query
-        query = {'code': course_name}
+        query = {'code': course_name.upper() }
         
         # Read from DB link to course
         try:
@@ -86,7 +85,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
         # Parse the html and return the data
         data = None
         try:
-            data = parsing_func[course_name.lower()](bsoup)
+            data = parsing_func[course_name](bsoup)
         except Exception as ex:
             print ex.message
         
