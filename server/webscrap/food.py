@@ -8,6 +8,7 @@
 import re
 import requests
 from bs4 import BeautifulSoup
+from util import download_file, get_bsoup
 
 from os import path,makedirs
 from subprocess import call
@@ -88,10 +89,10 @@ def _parse_html(html):
                'desert' -> unicode
     """
     
-    weekdays = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
+    weekdays = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
     
     # get the cells from the html
-    bsoup = BeautifulSoup(html)
+    bsoup = get_bsoup(html)
     cells = [ _prettify(cell.text) for cell in bsoup.find_all('td') ]
     
     # split the cells according to meal. hardcoded positions 
@@ -107,7 +108,7 @@ def _parse_html(html):
     
     return menu
 
-def fetch_menu(date):
+def fetch_menu( date=datetime.now() ):
     # calculate the first day of the week
     monday = date - timedelta(date.weekday())
     
@@ -120,38 +121,45 @@ def fetch_menu(date):
     if not path.exists(folder_name):
         makedirs(folder_name)
     
-    # download the doc file 
-    doc = requests.get( link + filename + '.doc' )
-    if doc.status_code is not 200 :
-        return dict()
-    
-    # write the doc file to disk
-    f = open(doc_filepath, 'w+')
-    f.write(doc.content)
-    f.close()
+    # download the doc file
+    download_file(link + filename + '.doc', doc_filepath)
+
+    if not path.exists(doc_filepath):
+        return None
     
     if not _convert_to_html(doc_filepath, htm_filepath):
-        return dict() # if the convertion fails
+        return None
     
     # reads the html code from disk
     file_html = open(htm_filepath, 'r')
     html = file_html.read()
     file_html.close()
     
-    return _parse_html(html)
+    try:
+        food_dict = _parse_html(html)
+        
+        if isinstance(food_dict, dict):
+            return food_dict
+        
+    except Exception as exception:
+        print exception.message
+        pass
 
 
 # testing code
 if __name__ == '__main__':
     weekdays = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
     menu = fetch_menu(datetime.now() )
-    menu = fetch_menu(datetime(2014,1,23) )
+    #menu = fetch_menu(datetime(2014,1,23) )
 	
-    for day in weekdays:
-        print day.upper()
-        for time in menu[day]:
-            print time.upper()
-            print '\t#  MAIN  #: ' + menu[day][time]['main'  ]
-            print '\t#  SALAD #: ' + menu[day][time]['salad' ]
-            print '\t# DESERT #: ' + menu[day][time]['desert']
+    if isinstance(menu, dict):
+        for day in weekdays:
+            print day.upper()
+            for time in menu[day]:
+                print time.upper()
+                print '\t#  MAIN  #: ' + menu[day][time]['main'  ]
+                print '\t#  SALAD #: ' + menu[day][time]['salad' ]
+                print '\t# DESERT #: ' + menu[day][time]['desert']
+    else:
+        print 'Error here!'
 
