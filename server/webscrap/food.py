@@ -5,15 +5,17 @@
 # Exception handling
 # Logging actions for debugging purpuses
 
-import re
 import requests
 from bs4 import BeautifulSoup
 from util import download_file, get_bsoup
+from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 from os import path,makedirs
 from subprocess import call
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 
+weekdays = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
 link = 'http://uth.gr/static/miscdocs/merimna/'
 folder_name = 'food-menu/'
 
@@ -30,7 +32,7 @@ def _convert_to_html(doc_filepath, htm_filepath):
     soffice_args = ['soffice', '--headless', '--convert-to', 'htm:HTML', '--outdir', folder_name, doc_filepath ] 
     ret_code = call(soffice_args)
     
-    if ret_code == 0 and path.exists(htm_filepath):
+    if ret_code is 0 and path.exists(htm_filepath):
         return True
     else:
         return False
@@ -89,8 +91,6 @@ def _parse_html(html):
                'desert' -> unicode
     """
     
-    weekdays = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
-    
     # get the cells from the html
     bsoup = get_bsoup(html)
     cells = [ _prettify(cell.text) for cell in bsoup.find_all('td') ]
@@ -107,10 +107,45 @@ def _parse_html(html):
         menu[ weekdays[i] ]['dinner'] = { 'main': dinner[0][i], 'salad': dinner[1][i], 'desert': dinner[2][i] }
     
     return menu
+    
+def _date_to_datetime(date):
+    """
+    Converts date object to datetime, supported by MongoDB
+    """
+    return datetime.combine(date, datetime.min.time() )
 
-def fetch_menu( date=datetime.now() ):
+def _update_database(food_menu_dict, week):
+    """
+    Connects to the database and stores the food_menu_dict.
+    """
+    week = _date_to_datetime(week)
+    
+    # Get the collection from db
+    client = MongoClient()
+    collection = client.uthportal.uth.food_menu
+    
+    # Queries for the 'food_menu' document (latest)
+    find_query = { 'name' : 'food_menu' }
+    update_query = { '$set': { 'date': week, 'menu' : food_menu_dict } }
+    
+    # Update if needed the 'food_menu' document
+    document = collection.find_one(find_query)
+    if not isinstance(document, dict):
+        collection.update( find_query, update_query, upsert=True)
+    elif document['date'] < week:
+        collection.update( find_query, update_query )
+    
+    # Queries for the 'h_food_menu' (history)
+    h_find_query = { 'name' : 'h_food_menu' }
+    h_update_query = { '$set' : { week.isoformat() : { 'date' : week, 'menu' : food_menu_dict } } }
+    
+    # Updates the history
+    collection.update(h_find_query, h_update_query, upsert=True)
+        
+        
+def fetch_food_menu( date=datetime.today() ):
     # calculate the first day of the week
-    monday = date - timedelta(date.weekday())
+    monday = (date - timedelta(date.weekday())).date()
     
     # filename format: 'menusitisis_YYYYMMDD'
     filename = 'menusitisis_%d%02d%02d' % (monday.year, monday.month, monday.day)
@@ -136,30 +171,41 @@ def fetch_menu( date=datetime.now() ):
     file_html.close()
     
     try:
-        food_dict = _parse_html(html)
-        
-        if isinstance(food_dict, dict):
-            return food_dict
+        food_menu_dict = _parse_html(html)
+        for (i,day) in enumerate(weekdays):
+            date_ = monday + timedelta(days=i)
+            food_menu_dict[day]['date'] = _date_to_datetime(date_)
         
     except Exception as exception:
         print exception.message
+        return None
+    
+    try:
+        _update_database(food_menu_dict, monday)
+    except OperationFailure:
+        # TODO: Logging
+        print 'AAA'
         pass
+        
+    return food_menu_dict
 
 
 # testing code
 if __name__ == '__main__':
-    weekdays = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
-    menu = fetch_menu(datetime.now() )
-    #menu = fetch_menu(datetime(2014,1,23) )
+    menu = fetch_food_menu(datetime(year=2014, month=1, day=23))
 	
+    """
     if isinstance(menu, dict):
         for day in weekdays:
             print day.upper()
+            print menu[day]['date']
             for time in menu[day]:
-                print time.upper()
-                print '\t#  MAIN  #: ' + menu[day][time]['main'  ]
-                print '\t#  SALAD #: ' + menu[day][time]['salad' ]
-                print '\t# DESERT #: ' + menu[day][time]['desert']
+                if isinstance(menu[day][time], dict):
+                    print time.upper()
+                    print '\t#  MAIN  #: ' + menu[day][time]['main'  ]
+                    print '\t#  SALAD #: ' + menu[day][time]['salad' ]
+                    print '\t# DESERT #: ' + menu[day][time]['desert']
     else:
         print 'Error here!'
+    """
 

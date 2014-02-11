@@ -81,16 +81,16 @@ def fetch_html(link, timeout=5.0):
 
 
 def download_file(link, filename, timeout=5.0):
+    # open the file
     with open(filename, 'wb') as handle:
         try:
+            # streaming the file to its location
             page = requests.get(link, timeout=timeout, stream=True)
-            
             for block in page.iter_content(1024):
                 if not block:
                     break
-                
                 handle.write(block)
-                    
+                
         except requests.exceptions.Timeout:
             # TODO: Logging
             return None
