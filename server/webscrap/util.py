@@ -48,7 +48,7 @@ def fetch_html(link, timeout=5.0):
     """
 
     filename = slugify(link) + '.html'
-    
+
     # logging python class way better!
     """
     # if we are debugging and the file with the page html exists on the disk
@@ -59,17 +59,17 @@ def fetch_html(link, timeout=5.0):
             html = f.read()
     else:
     """
-    
+
     # fetch the page
     try:
         page = requests.get(link, timeout=timeout)
     except requests.exceptions.Timeout:
         # TODO: Logging
         return None
-    
+
     if page.status_code is not 200:
         return None
-    
+
     # store the page on the disk
     # open or create the file for writing
     with open(filename, 'w+') as f:
@@ -90,7 +90,7 @@ def download_file(link, filename, timeout=5.0):
                 if not block:
                     break
                 handle.write(block)
-                
+
         except requests.exceptions.Timeout:
             # TODO: Logging
             return None

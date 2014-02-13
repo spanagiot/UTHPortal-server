@@ -21,7 +21,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     from util import fetch_html, get_bsoup
     import gevent.queue
     import gevent.pool
-    
+
     # Initialize an empty queue to hold the tasks
     task_queue = gevent.queue.Queue()
 
@@ -31,65 +31,65 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     # Enqueue the tasks
     for course_name in parsing_func.keys():
         task_queue.put(course_name)
-    
+
     # Greenlet function
     def crawl_page():
-        
+
         # Get the course name, or exit if no left in queue
         try:
             course_name = task_queue.get()
         except gevent.queue.Empty:
             return
-        
+
         # Get the database
         db = client.uthportal
-        
+
         # Set the query
         query = {'code': course_name.upper() }
-        
+
         # Read from DB link to course
         try:
             records = db.inf.courses.find(query)
-            
+
             if records.count() is 0:
                 # TODO: error
                 pass
             if records.count() > 1:
                 # TODO: warning
                 pass
-            
+
             link = records[0]['announcements']['link']
             if link is None:
                 # TODO: error
                 pass
-                
+
         except Exception as ex:
             print ex.message
             return
-        
-        
+
+
         # Try to fetch_html 'n_tries'
-        for i in xrange(n_tries):            
+        for i in xrange(n_tries):
             html = fetch_html(link, timeout=timeout_secs)
-            
+
             if html is not None:
                 break
             elif i is n_tries - 1:
                 return
-        
+
         # Get BeautifulSoup Object
         bsoup = get_bsoup(html)
         if bsoup is None:
             return
-        
+
         # Parse the html and return the data
         data = None
         try:
             data = parsing_func[course_name](bsoup)
         except Exception as ex:
             print ex.message
-        
-        
+
+
         # If data are valid update the db
         if data is not None:
             print course_name
@@ -124,4 +124,3 @@ if __name__ == '__main__':
         #print(data['ce232'][-5][1])
 
     testbench()
-
