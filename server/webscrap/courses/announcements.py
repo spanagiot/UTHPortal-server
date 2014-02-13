@@ -34,34 +34,34 @@ def ce120(bsoup):
             ...
         </div>
     """
-    
+
     # find the 'announce' class which contains the announcements
     # bsoup.find(tag_name, attributes)
     announce_class = bsoup.find('div', class_ = 'announce')
 
     # Initialize an empty list
     announce_list = list()
-    
+
     # Parse each announcement
     for announce in announce_class.findAll('span', class_ = 'date'):
         # Get date, remove any unwanted punctuation and convert to datetime
         # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
         date_string = announce.text.strip(string.punctuation)
         date = datetime.strptime(date_string , '%d/%m/%Y')
-        
+
         # Get the parts of the announcement
         parts = list()
         for part in announce.next_siblings:
             if part.name is 'span' or part.name is 'p':
                 break
             parts.append( unicode(part) )
-        
+
         # Covert list to unicode
         announce_html = (''.join( parts )).strip()
-        
+
         # Add the new announcement as dictionary
         announce_list.append( {'date':date, 'html':announce_html, 'has_time': False } )
-    
+
     # Return the list of announcements
     return announce_list
 
@@ -129,9 +129,9 @@ parsing_func['ce232'] = ce232
 # should all tests be off the file/module to be tested?
 if __name__ == '__main__':
     debug = True
-    
+
     ce120_announcements = ce120()
-    
+
     ce232_announcements = ce232()
 
     def print_all(announcements):
