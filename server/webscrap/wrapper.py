@@ -17,7 +17,7 @@ client = MongoClient()
 def fetch_courses(n_workers, timeout_secs, n_tries):
     """
     """
-    from courses.announcements import parsing_func
+    from courses.announcements import parsers
     from util import fetch_html
     import gevent.queue
     import gevent.pool
@@ -29,7 +29,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     worker_pool = gevent.pool.Pool(n_workers)
 
     # Enqueue the tasks
-    for course_name in parsing_func.keys():
+    for course_name in parsers.keys():
         task_queue.put(course_name)
 
     # Greenlet function
@@ -85,7 +85,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
         # Parse the html and return the data
         data = None
         try:
-            data = parsing_func[course_name](bsoup)
+            data = parsers[course_name](bsoup)
         except Exception as ex:
             print ex.message
 

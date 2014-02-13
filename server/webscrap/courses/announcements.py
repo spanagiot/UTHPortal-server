@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# parsing functions of course pages
+# parsing functions of course announcement pages
 
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -10,14 +10,13 @@ import string
 debug = False
 
 # TODO: All functions return a list of dicts in the format:
-# { 'date':date, 'html':html, 'has_time': 0/1 } 
-
-# course parsing function dictionary
+# { 'date':date, 'html':html, 'has_time': 0/1 }
 # NOTE
-# a course may have more than one page with data. how do we generalize this
-# dictionary? should we introduce a "course" class, that will also contain links
-# and information about each course?
-parsing_func = {}
+# shouldn't the format be:
+# { 'date':date, 'time': time/None, 'html':html }
+
+# course parsing functions dictionary
+parsers = {}
 
 def ce120(bsoup):
     """
@@ -120,8 +119,8 @@ def ce232(bsoup):
 
 
 # add the course parsing functions to the dictionary
-parsing_func['ce120'] = ce120
-parsing_func['ce232'] = ce232
+parsers['ce120'] = ce120
+parsers['ce232'] = ce232
 
 """
 # testing code to be run when the module is run directly
