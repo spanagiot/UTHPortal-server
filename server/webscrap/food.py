@@ -7,7 +7,7 @@
 
 import requests
 from bs4 import BeautifulSoup
-from util import download_file, get_bsoup
+from util import download_file
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
@@ -92,7 +92,7 @@ def _parse_html(html):
     """
 
     # get the cells from the html
-    bsoup = get_bsoup(html)
+    bsoup = BeautifulSoup(html)
     cells = [ _prettify(cell.text) for cell in bsoup.find_all('td') ]
 
     # split the cells according to meal. hardcoded positions

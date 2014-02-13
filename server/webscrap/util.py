@@ -94,8 +94,3 @@ def download_file(link, filename, timeout=5.0):
         except requests.exceptions.Timeout:
             # TODO: Logging
             return None
-            
-
-def get_bsoup(html):
-    
-    return BeautifulSoup(html)

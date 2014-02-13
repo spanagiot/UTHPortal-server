@@ -18,7 +18,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
     """
     """
     from courses.announcements import parsing_func
-    from util import fetch_html, get_bsoup
+    from util import fetch_html
     import gevent.queue
     import gevent.pool
 
@@ -78,7 +78,7 @@ def fetch_courses(n_workers, timeout_secs, n_tries):
                 return
 
         # Get BeautifulSoup Object
-        bsoup = get_bsoup(html)
+        bsoup = BeautifulSoup(html)
         if bsoup is None:
             return
 

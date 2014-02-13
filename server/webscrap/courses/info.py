@@ -7,15 +7,15 @@
 
 import requests
 from bs4 import BeautifulSoup
-from .util import fetch_html, get_bsoup
+from .util import fetch_html
 
 def fetch_course_links():
     link = 'http://www.inf.uth.gr/cced/?page_id=16'
 
     # get the undergraduate course page
     page = fetch_html(link)
-    bsoup = get_bsoup(page.content)
-    
+    bsoup = BeautifulSoup(page.content)
+
     # find the table containing all courses
     main_table = bsoup.find('table', attrs={'class':'outer_undergraduate_program'})
 
@@ -27,8 +27,8 @@ def fetch_course_info(link):
 
     # get the course page defined by the link
     page = fetch_html(link)
-    bsoup = get_bsoup(page.content)
-    
+    bsoup = BeautifulSoup(page.content)
+
     # get the regions we are interested in
     header = bsoup.find('header', attrs={'id':'page-heading'})
     table = bsoup.find('table', class_='course')
