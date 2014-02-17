@@ -3,6 +3,11 @@
 # Vim swap files
 *.swp
 
-# Python Bytecode files
+# Python bytecode files
 *.pyc
 
+# log files
+*.log
+
+# html files
+*.html
