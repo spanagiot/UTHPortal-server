@@ -79,6 +79,15 @@ def fetch_html(link, timeout=5.0):
     # return the html string
     return html
 
+def get_bsoup(html):
+    # TODO: Error handling
+
+    try:
+        bsoup = BeautifulSoup(html)
+    except:
+        pass
+
+    return bsoup
 
 def download_file(link, filename, timeout=5.0):
     # open the file
