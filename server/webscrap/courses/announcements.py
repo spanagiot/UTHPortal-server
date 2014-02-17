@@ -3,7 +3,7 @@
 
 # parsing functions of course announcement pages
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from datetime import datetime
 import string
 
@@ -64,6 +64,54 @@ def ce120(bsoup):
     # Return the list of announcements
     return announce_list
 
+def ce121(bsoup):
+    """
+    course 121: Προγραμματισμος ΙΙ
+
+    HTML Format:
+        <h3>Ανακοινώσεις</h3>
+        <ul>
+            <li><b>date1 <span ... > title1 </b>
+            announce1
+            </li>
+            <li><b>date2 <span ... > title2 </b>
+            announce2
+            </li>
+            ....
+        </ul>
+    """
+    # Get the region of the announcements
+    announce_region = bsoup.find('h3',text=u'Ανακοινώσεις')
+
+    # Reach the 'ul' tag
+    while True:
+        if announce_region is not None and \
+            getattr(announce_region, 'name') is not None and \
+            announce_region.name == 'ul':
+                break
+
+        announce_region = announce_region.next_sibling
+
+    # Parse the announcements
+    announce_list = list()
+    for announce in announce_region.children:
+        if isinstance(announce, Tag):
+            # Parse the date
+            date_splitter = announce.text.find(' ')
+            date_string = announce.text[:date_splitter]
+            date = datetime.strptime(date_string, '%d/%m/%Y')
+
+            # Remove the date part from announcement
+            html = unicode(announce)
+            date_position = html.find(date_string)
+            html = html[:date_position] + html[date_position + len(date_string):]
+
+            #Add the announcement into the list
+            announce_list.append( {'date':date, 'html':html, 'has_time': False} )
+
+
+    return announce_list
+
 
 def ce232(bsoup):
     """
@@ -120,32 +168,6 @@ def ce232(bsoup):
 
 # add the course parsing functions to the dictionary
 parsers['ce120'] = ce120
+parsers['ce121'] = ce121
 parsers['ce232'] = ce232
 
-"""
-# testing code to be run when the module is run directly
-# NOTE
-# should all tests be off the file/module to be tested?
-if __name__ == '__main__':
-    debug = True
-
-    ce120_announcements = ce120()
-
-    ce232_announcements = ce232()
-
-    def print_all(announcements):
-        for (date, content) in announcements:
-            print(date.date())
-            print(content)
-            print('')
-
-    def print_single(announcements, index):
-        print(announcements[index][0].date())
-        print(announcements[index][1])
-
-    #print_all(ce120_announcements)
-    print_single(ce120_announcements, -13)
-
-    #print_all(ce232_announcements)
-    print_single(ce232_announcements, -5)
-"""
