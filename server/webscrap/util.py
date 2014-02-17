@@ -33,51 +33,28 @@ def slugify(value):
     return value
 
 
-def fetch_html(link, timeout=5.0):
+def fetch_html(link, timeout=8.0):
     """
-    fetch the html of the page, store it on the disk, return it as a string
-
-    http://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files
-    http://docs.python.org/2/library/functions.html#open
-
-    NOTE
-    maybe add an option to store the html in the database
-
-    NOTE
-    should the string be a unicode one?
+    fetch and return the html of a page as a unicode string
     """
-
-    filename = slugify(link) + '.html'
-
-    # logging python class way better!
-    """
-    # if we are debugging and the file with the page html exists on the disk
-    if debug and os.path.exists(filename):
-        # open the file as read-only
-        with open(filename, 'r') as f:
-            # get the html from the file
-            html = f.read()
-    else:
-    """
-
-    # fetch the page
     try:
         page = requests.get(link, timeout=timeout)
+    except requests.exceptions.ConnectionError:
+        #logging.error("fetch_html: connection error while fetching" +
+        #        '\n\t' + link)
+        return None
     except requests.exceptions.Timeout:
-        # TODO: Logging
+        #logging.error("fetch_html: timeout while fetching" + '\n\t' + link)
         return None
 
-    if page.status_code is not 200:
+    if page.status_code is not (200 or 301):
+        #logging.error("fetch_html: could not retrieve" + '\n\t' + link)
         return None
 
-    # store the page on the disk
-    # open or create the file for writing
-    with open(filename, 'w+') as f:
-        html = page.content
-        f.write(html)
-
-    # return the html string
-    return html
+    # TODO
+    # return the html as a unicode string
+    # currently it's a simple string
+    return page.content
 
 def get_bsoup(html):
     # TODO: Error handling
