@@ -10,6 +10,9 @@ from bs4 import BeautifulSoup
 import os
 import re
 import unicodedata
+import logging
+
+logger = logging.getLogger(__name__)
 
 def slugify(value):
     """
@@ -40,15 +43,15 @@ def fetch_html(link, timeout=8.0):
     try:
         page = requests.get(link, timeout=timeout)
     except requests.exceptions.ConnectionError:
-        #logging.error("fetch_html: connection error while fetching" +
-        #        '\n\t' + link)
+        logger.warning("fetch_html: connection error while fetching" +
+                '\n\t' + link)
         return None
     except requests.exceptions.Timeout:
-        #logging.error("fetch_html: timeout while fetching" + '\n\t' + link)
+        logger.warning("fetch_html: timeout while fetching" + '\n\t' + link)
         return None
 
     if page.status_code is not (200 or 301):
-        #logging.error("fetch_html: could not retrieve" + '\n\t' + link)
+        logger.warning("fetch_html: could not retrieve" + '\n\t' + link)
         return None
 
     # TODO
@@ -57,17 +60,21 @@ def fetch_html(link, timeout=8.0):
     return page.content
 
 def get_bsoup(html):
-    # TODO: Error handling
-
+    """
+    Create a BeautifulSoup object from html string
+    """
     try:
         bsoup = BeautifulSoup(html)
-    except:
-        pass
+    except Exception as e:
+        logger.error("get_bsoup: %s" % e)
 
     return bsoup
 
 def download_file(link, filename, timeout=5.0):
-    # open the file
+    """
+    Download a file and save it to disk
+    """
+    # open the file for writting
     with open(filename, 'wb') as handle:
         try:
             # streaming the file to its location
@@ -78,5 +85,6 @@ def download_file(link, filename, timeout=5.0):
                 handle.write(block)
 
         except requests.exceptions.Timeout:
-            # TODO: Logging
+            logger.warning("download_file: timeout while fetching" + '\n\t' + link)
             return None
+
