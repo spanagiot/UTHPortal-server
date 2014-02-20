@@ -1,6 +1,84 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Department of Electrical and Computer Engineering
+# information, announcements and course parsing functions
+
+import requests
+from bs4 import BeautifulSoup
+# http://www.crummy.com/software/BeautifulSoup/bs4/doc/#unicode-dammit
+from bs4 import UnicodeDammit
+from util import fetch_html
+
+
+### info.py ###################################################################
+
+# TODO:
+# Exception Handling
+# Write document file for HTML format
+
+import requests
+from bs4 import BeautifulSoup
+from .util import fetch_html
+
+def fetch_course_links():
+    link = 'http://www.inf.uth.gr/cced/?page_id=16'
+
+    # get the undergraduate course page
+    page = fetch_html(link)
+    bsoup = BeautifulSoup(page.content)
+
+    # find the table containing all courses
+    main_table = bsoup.find('table', attrs={'class':'outer_undergraduate_program'})
+
+    # get all courses links
+    links = [ cell['href'] for cell in main_table.find_all('a',href=True) ]
+    return links
+
+def fetch_course_info(link):
+
+    # get the course page defined by the link
+    page = fetch_html(link)
+    bsoup = BeautifulSoup(page.content)
+
+    # get the regions we are interested in
+    header = bsoup.find('header', attrs={'id':'page-heading'})
+    table = bsoup.find('table', class_='course')
+
+    # create the dict and get the name of the course
+    info = dict()
+    info['name'] = header.find('h1').text
+
+    # find (if exists) if the course has a dedicated page
+    info['link'] = unicode()
+    cell_url = table.find('th',text=u'Σελίδα Μαθήματος')
+    if cell_url is not None:
+        info['link'] = cell_url.find_next_sibling('td').a['href']
+
+    return info
+
+
+def update_course_info(info):
+    pass
+
+# testing code
+if __name__ == '__main__':
+    links_list = fetch_course_links()
+    #links_list = [ 'http://www.inf.uth.gr/cced/?page_id=1553' ]
+
+    courses_info = dict()
+    for link in links_list:
+        info = fetch_course_info(link)
+
+        if isinstance(info, dict):
+            print info['name'] + ': ' + info['link']
+
+
+### /info.py ##################################################################
+
+
+### announcements.py ##########################################################
+
 # parsing functions of course announcement pages
 
 from bs4 import BeautifulSoup, Tag
@@ -63,6 +141,7 @@ def ce120(bsoup):
 
     # Return the list of announcements
     return announce_list
+
 
 def ce121(bsoup):
     """
@@ -171,3 +250,103 @@ parsers['ce120'] = ce120
 parsers['ce121'] = ce121
 parsers['ce232'] = ce232
 
+### /announcements.py #########################################################
+
+
+def general():
+    """
+    general announcements
+
+    http://www.inf.uth.gr/cced/?cat=24
+
+    HTML format:
+        <div id="post">
+            <article>
+
+                <div class="loop-entry-right">
+                    <h2><a href="" title=""></a></h2>
+
+                    [content]
+
+                </div>
+
+                <div class="loop-entry-left">
+                    <div class="post-meta">
+                        <div class="post-date">
+
+                           [date]
+
+                        </div>
+                    </div>
+                </div>
+
+            </article>
+
+            ...
+
+            <div class="page-pagination clearfix">
+                <span class="current">1</span>
+                <a href=''>2</a>
+                <a href=''>3</a>
+                <a href=''>4</a>
+            </div>
+        </div>
+    """
+    link = 'http://www.inf.uth.gr/cced/?cat=24'
+
+    page = fetch_html(link)
+    bsoup = BeautifulSoup(page)
+
+    announcements_raw = bsoup.find('div', id = 'post')
+
+    announcements = []
+
+    for announcement in announcements_raw.find_all('article'):
+        #date = announcement.find('div', class_ = 'post-date').string.encode('utf-8')
+        #date = announcement.find('div', class_ = 'post-date').string
+        date = announcement.find('div', class_ = 'post-date').string
+        date = UnicodeDammit(date)
+
+        print('')
+        print(type(date))
+        print(date)
+        print('')
+
+        body = announcement.find('div', class_ = 'loop-entry-right')
+
+        print('')
+        print(body)
+        print('')
+
+        link = body.find('h2').find('a')
+
+        print('')
+        print(link)
+        print('')
+
+        contents = u''
+
+        for element in body:
+            #print('')
+            #print(element)
+            #print('')
+
+            if element.name is not "h2":
+                contents += element.encode('utf-8')
+
+        print('')
+        print(contents)
+        print('')
+
+    return announcements
+
+
+def graduates():
+    """
+    graduates announcements
+    http://www.inf.uth.gr/cced/?cat=5
+    """
+    pass
+
+if __name__ == '__main__':
+    general()
