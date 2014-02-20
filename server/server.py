@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# (HTTP REST API) JSON serving Flask app
+
 import flask
 from pymongo import MongoClient
 from json import JSONEncoder
