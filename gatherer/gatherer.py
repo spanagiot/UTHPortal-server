@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# periodic asynchronous scrapping coordinator
+
 # TODO:
 # Get proper link for courses
 # Logging and testing
-
-# asynchronous scrapping wrapper
 
 # import gevent.monkey and apply the patch for async operations
 import gevent.monkey
@@ -13,6 +13,7 @@ gevent.monkey.patch_all()
 
 from pymongo import MongoClient
 client = MongoClient()
+
 
 def fetch_courses(n_workers, timeout_secs, n_tries):
     """
