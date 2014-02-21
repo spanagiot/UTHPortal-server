@@ -186,7 +186,7 @@ def ce121(bsoup):
 
 def ce232(bsoup):
     """
-    course: ce232 : Computer Organization and Design
+    course: ΗΥ232 Οργάνωση και Σχεδίαση Ηλεκτρονικών Υπολογιστών
 
     HTML format:
         <h1>
@@ -234,7 +234,7 @@ def ce232(bsoup):
         contents.append( content.strip() )
 
     # return the date/content tuples
-    return [ {'date':date, 'html':html, 'has_time': False} for (date,html) in zip(dates,contents) ]
+    return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
 
 
 # add the course parsing functions to the dictionary
@@ -245,7 +245,7 @@ parsers['ce232'] = ce232
 ### /announcements.py #########################################################
 
 
-def general():
+def announcements_general():
     """
     general announcements
 
@@ -333,7 +333,7 @@ def general():
     return announcements
 
 
-def graduates():
+def announcements_graduates():
     """
     graduates announcements
     http://www.inf.uth.gr/cced/?cat=5
@@ -360,6 +360,6 @@ def test_fetch_course_links():
 if __name__ == '__main__':
     """
     """
-    test_fetch_course_links()
+    #test_fetch_course_links()
 
-    #general()
+    announcements_general()
