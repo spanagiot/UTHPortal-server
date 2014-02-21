@@ -2,12 +2,18 @@
 # -*- coding: utf-8 -*-
 
 # Department of Electrical and Computer Engineering
-# information, announcements and course parsing functions
+
+# parsing functions for announcements of the department and information and
+# announcements of the department's courses
 
 import requests
 from bs4 import BeautifulSoup
 # http://www.crummy.com/software/BeautifulSoup/bs4/doc/#unicode-dammit
 from bs4 import UnicodeDammit
+from bs4 import Tag
+from datetime import datetime
+import string
+
 from util import fetch_html
 
 
@@ -16,10 +22,6 @@ from util import fetch_html
 # TODO:
 # Exception Handling
 # Write document file for HTML format
-
-import requests
-from bs4 import BeautifulSoup
-from .util import fetch_html
 
 def fetch_course_links():
     link = 'http://www.inf.uth.gr/cced/?page_id=16'
@@ -61,19 +63,6 @@ def fetch_course_info(link):
 def update_course_info(info):
     pass
 
-# testing code
-if __name__ == '__main__':
-    links_list = fetch_course_links()
-    #links_list = [ 'http://www.inf.uth.gr/cced/?page_id=1553' ]
-
-    courses_info = dict()
-    for link in links_list:
-        info = fetch_course_info(link)
-
-        if isinstance(info, dict):
-            print info['name'] + ': ' + info['link']
-
-
 ### /info.py ##################################################################
 
 
@@ -81,17 +70,14 @@ if __name__ == '__main__':
 
 # parsing functions of course announcement pages
 
-from bs4 import BeautifulSoup, Tag
-from datetime import datetime
-import string
-
-debug = False
-
-# TODO: All functions return a list of dicts in the format:
+# NOTE
+# all functions return a list of dicts in the format:
 # { 'date':date, 'html':html, 'has_time': 0/1 }
 # NOTE
 # shouldn't the format be:
 # { 'date':date, 'time': time/None, 'html':html }
+# or even:
+# { 'date':date, 'time': time/None, 'link':link, 'html':html }
 
 # course parsing functions dictionary
 parsers = {}
@@ -348,5 +334,25 @@ def graduates():
     """
     pass
 
+
+### testing code
+def test_fetch_course_links():
+    """
+    """
+    links_list = fetch_course_links()
+    #links_list = [ 'http://www.inf.uth.gr/cced/?page_id=1553' ]
+
+    courses_info = {}
+    for link in links_list:
+        info = fetch_course_info(link)
+
+        if isinstance(info, dict):
+            print(info['name'] + ': ' + info['link'])
+
+
 if __name__ == '__main__':
-    general()
+    """
+    """
+    test_fetch_course_links()
+
+    #general()
