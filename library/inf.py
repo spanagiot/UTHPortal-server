@@ -15,6 +15,7 @@ from datetime import datetime
 import string
 
 from util import fetch_html
+from util import get_bsoup
 
 
 ### info.py ###################################################################
@@ -28,7 +29,7 @@ def fetch_course_links():
 
     # get the undergraduate course page
     page = fetch_html(link)
-    bsoup = BeautifulSoup(page.content)
+    bsoup = get_bsoup(page)
 
     # find the table containing all courses
     main_table = bsoup.find('table', attrs={'class':'outer_undergraduate_program'})
@@ -41,7 +42,7 @@ def fetch_course_info(link):
 
     # get the course page defined by the link
     page = fetch_html(link)
-    bsoup = BeautifulSoup(page.content)
+    bsoup = get_bsoup(page)
 
     # get the regions we are interested in
     header = bsoup.find('header', attrs={'id':'page-heading'})
@@ -281,7 +282,7 @@ def general():
     link = 'http://www.inf.uth.gr/cced/?cat=24'
 
     page = fetch_html(link)
-    bsoup = BeautifulSoup(page)
+    bsoup = get_bsoup(page)
 
     announcements_raw = bsoup.find('div', id = 'post')
 
@@ -347,7 +348,8 @@ def test_fetch_course_links():
         info = fetch_course_info(link)
 
         if isinstance(info, dict):
-            print(info['name'] + ': ' + info['link'])
+            print(info['name'].encode('utf-8') + ': ' +
+                    info['link'].encode('utf-8'))
 
 
 if __name__ == '__main__':
