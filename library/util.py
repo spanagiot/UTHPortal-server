@@ -14,6 +14,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def slugify(value):
     """
     convert to lowercase, remove non valid characters (alphanumeric, dot,
@@ -59,6 +60,7 @@ def fetch_html(link, timeout=8.0):
     # currently it's a simple string
     return page.content
 
+
 def get_bsoup(html):
     """
     Create a BeautifulSoup object from html string
@@ -69,6 +71,7 @@ def get_bsoup(html):
         logger.error("get_bsoup: %s" % e)
 
     return bsoup
+
 
 def download_file(link, filename, timeout=5.0):
     """
@@ -87,4 +90,3 @@ def download_file(link, filename, timeout=5.0):
         except requests.exceptions.Timeout:
             logger.warning("download_file: timeout while fetching" + '\n\t' + link)
             return None
-

@@ -25,6 +25,8 @@ from util import get_bsoup
 # Write document file for HTML format
 
 def fetch_course_links():
+    """
+    """
     link = 'http://www.inf.uth.gr/cced/?page_id=16'
 
     # get the undergraduate course page
@@ -38,8 +40,10 @@ def fetch_course_links():
     links = [ cell['href'] for cell in main_table.find_all('a',href=True) ]
     return links
 
-def fetch_course_info(link):
 
+def fetch_course_info(link):
+    """
+    """
     # get the course page defined by the link
     page = fetch_html(link)
     bsoup = get_bsoup(page)
@@ -62,6 +66,8 @@ def fetch_course_info(link):
 
 
 def update_course_info(info):
+    """
+    """
     pass
 
 ### /info.py ##################################################################
@@ -174,7 +180,6 @@ def ce121(bsoup):
 
             #Add the announcement into the list
             announce_list.append( {'date':date, 'html':html, 'has_time': False} )
-
 
     return announce_list
 
