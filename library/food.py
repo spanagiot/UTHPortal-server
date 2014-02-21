@@ -47,7 +47,7 @@ def _prettify(text):
     """
     special_menu = u'ΕΙΔΙΚΟ ΜΕΝΟΥ'
 
-    pretty_text = unicode()
+    pretty_text = u''
     is_whitespace = False
     for i in xrange(len(text)):
         if text[i].isspace() and not is_whitespace:
@@ -100,9 +100,9 @@ def _parse_html(html):
     dinner = [ cells[41:48], cells[49:56], cells[57:64] ]
 
     # create the menu dictionary
-    menu = dict()
+    menu = {}
     for i in xrange(7):
-        menu[ weekdays[i] ] = dict()
+        menu[ weekdays[i] ] = {}
         menu[ weekdays[i] ]['lunch' ] = { 'main': lunch[0][i], 'salad': lunch[1][i], 'desert': lunch[2][i] }
         menu[ weekdays[i] ]['dinner'] = { 'main': dinner[0][i], 'salad': dinner[1][i], 'desert': dinner[2][i] }
 

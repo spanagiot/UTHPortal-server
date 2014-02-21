@@ -48,11 +48,11 @@ def fetch_course_info(link):
     table = bsoup.find('table', class_='course')
 
     # create the dict and get the name of the course
-    info = dict()
+    info = {}
     info['name'] = header.find('h1').text
 
     # find (if exists) if the course has a dedicated page
-    info['link'] = unicode()
+    info['link'] = u''
     cell_url = table.find('th',text=u'Σελίδα Μαθήματος')
     if cell_url is not None:
         info['link'] = cell_url.find_next_sibling('td').a['href']
@@ -103,7 +103,7 @@ def ce120(bsoup):
     announce_class = bsoup.find('div', class_ = 'announce')
 
     # Initialize an empty list
-    announce_list = list()
+    announce_list = []
 
     # Parse each announcement
     for announce in announce_class.findAll('span', class_ = 'date'):
@@ -113,7 +113,7 @@ def ce120(bsoup):
         date = datetime.strptime(date_string , '%d/%m/%Y')
 
         # Get the parts of the announcement
-        parts = list()
+        parts = []
         for part in announce.next_siblings:
             if part.name is 'span' or part.name is 'p':
                 break
@@ -158,7 +158,7 @@ def ce121(bsoup):
         announce_region = announce_region.next_sibling
 
     # Parse the announcements
-    announce_list = list()
+    announce_list = []
     for announce in announce_region.children:
         if isinstance(announce, Tag):
             # Parse the date
