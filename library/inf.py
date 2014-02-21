@@ -29,9 +29,9 @@ def fetch_course_links():
     """
     link = 'http://www.inf.uth.gr/cced/?page_id=16'
 
-    # get the undergraduate course page
-    page = fetch_html(link)
-    bsoup = get_bsoup(page)
+    # get the html from the undergraduate course page
+    html = fetch_html(link)
+    bsoup = get_bsoup(html)
 
     # find the table containing all courses
     main_table = bsoup.find('table', attrs={'class':'outer_undergraduate_program'})
@@ -44,9 +44,9 @@ def fetch_course_links():
 def fetch_course_info(link):
     """
     """
-    # get the course page defined by the link
-    page = fetch_html(link)
-    bsoup = get_bsoup(page)
+    # get the html from the course page defined by the link
+    html = fetch_html(link)
+    bsoup = get_bsoup(html)
 
     # get the regions we are interested in
     header = bsoup.find('header', attrs={'id':'page-heading'})
@@ -286,8 +286,8 @@ def general():
     """
     link = 'http://www.inf.uth.gr/cced/?cat=24'
 
-    page = fetch_html(link)
-    bsoup = get_bsoup(page)
+    html = fetch_html(link)
+    bsoup = get_bsoup(html)
 
     announcements_raw = bsoup.find('div', id = 'post')
 
