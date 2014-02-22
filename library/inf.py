@@ -8,8 +8,6 @@
 
 import requests
 from bs4 import BeautifulSoup
-# http://www.crummy.com/software/BeautifulSoup/bs4/doc/#unicode-dammit
-from bs4 import UnicodeDammit
 from bs4 import Tag
 from datetime import datetime
 import string
@@ -113,7 +111,7 @@ def ce120(bsoup):
     announce_list = []
 
     # Parse each announcement
-    for announce in announce_class.findAll('span', class_ = 'date'):
+    for announce in announce_class.find_all('span', class_ = 'date'):
         # Get date, remove any unwanted punctuation and convert to datetime
         # Formats: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
         date_string = announce.text.strip(string.punctuation)
