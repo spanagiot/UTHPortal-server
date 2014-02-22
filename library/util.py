@@ -59,6 +59,27 @@ def fetch_html(link, timeout=8.0):
     return page.text
 
 
+def html_to_disk(link, html):
+    """
+    store the html in a file on the disk
+
+    http://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files
+    http://docs.python.org/2/library/functions.html#open
+    """
+    filename = slugify(link) + '.html'
+
+    # create or open the file for writing
+    try:
+        with open(filename, 'w+') as f:
+            f.write(html.encode('utf-8'))
+    except Exception as e:
+        print("html_to_disk: %s" % e)
+        #logger.error("html_to_disk: %s" % e)
+        return None
+
+    return filename
+
+
 def get_bsoup(html):
     """
     Create a BeautifulSoup object from html string
