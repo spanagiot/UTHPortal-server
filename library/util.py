@@ -56,10 +56,7 @@ def fetch_html(link, timeout=8.0):
         logger.warning("fetch_html: could not retrieve" + '\n\t' + link)
         return None
 
-    # TODO
-    # return the html as a unicode string
-    # currently it's a simple string
-    return page.content
+    return page.text
 
 
 def get_bsoup(html):
