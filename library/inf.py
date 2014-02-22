@@ -12,9 +12,6 @@ from bs4 import Tag
 from datetime import datetime
 import string
 
-from util import fetch_html
-from util import get_bsoup
-
 
 ### info.py ###################################################################
 
@@ -282,53 +279,7 @@ def announcements_general():
             </div>
         </div>
     """
-    link = 'http://www.inf.uth.gr/cced/?cat=24'
-
-    html = fetch_html(link)
-    bsoup = get_bsoup(html)
-
-    announcements_raw = bsoup.find('div', id = 'post')
-
-    announcements = []
-
-    for announcement in announcements_raw.find_all('article'):
-        #date = announcement.find('div', class_ = 'post-date').string.encode('utf-8')
-        #date = announcement.find('div', class_ = 'post-date').string
-        date = announcement.find('div', class_ = 'post-date').string
-        date = UnicodeDammit(date)
-
-        print('')
-        print(type(date))
-        print(date)
-        print('')
-
-        body = announcement.find('div', class_ = 'loop-entry-right')
-
-        print('')
-        print(body)
-        print('')
-
-        link = body.find('h2').find('a')
-
-        print('')
-        print(link)
-        print('')
-
-        contents = u''
-
-        for element in body:
-            #print('')
-            #print(element)
-            #print('')
-
-            if element.name is not "h2":
-                contents += element.encode('utf-8')
-
-        print('')
-        print(contents)
-        print('')
-
-    return announcements
+    pass
 
 
 def announcements_graduates():
@@ -358,6 +309,4 @@ def test_fetch_course_links():
 if __name__ == '__main__':
     """
     """
-    #test_fetch_course_links()
-
-    announcements_general()
+    test_fetch_course_links()
