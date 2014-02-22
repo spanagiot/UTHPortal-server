@@ -126,7 +126,7 @@ def ce120(bsoup):
                 break
             parts.append( unicode(part) )
 
-        # Covert list to unicode
+        # convert list to unicode
         announce_html = (''.join( parts )).strip()
 
         # Add the new announcement as dictionary

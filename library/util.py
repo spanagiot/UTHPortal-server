@@ -12,6 +12,7 @@ import re
 import unicodedata
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
