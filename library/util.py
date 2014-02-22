@@ -80,6 +80,27 @@ def html_to_disk(link, html):
     return filename
 
 
+def html_from_disk(link):
+    """
+    read and return the html from a file on the disk
+
+    http://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files
+    http://docs.python.org/2/library/functions.html#open
+    """
+    filename = slugify(link) + '.html'
+
+    # open the file for reading
+    try:
+        with open(filename, 'r') as f:
+            html = f.read()
+    except Exception as e:
+        print("html_from_disk: %s" % e)
+        #logger.error("html_from_disk: %s" % e)
+        return None
+
+    return html
+
+
 def get_bsoup(html):
     """
     Create a BeautifulSoup object from html string
