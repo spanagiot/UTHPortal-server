@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import logging.config
 import sys
 from Queue import PriorityQueue
 from pymongo import MongoClient
-from gatherer.gatherer import fetch_courses
+from gatherer import fetch_courses
 
 # Initialize logging
 LOGGING_FILE_PATH = 'logging.conf'
@@ -17,18 +18,25 @@ try:
         log_json = f.read()
 
     log_dict = json.loads(log_json)
-    logging.config.fileConfig(log_dict)
 except IOError:
     print 'ERROR: Cannot read %s' % LOGGING_FILE_PATH
-    sys.exit(1)
 except ValueError:
-    print 'ERROR: File is not a valid JSON object'
-    sys.exit(1)
+    print 'ERROR: logging.conf is not a valid JSON object'
+except Exception as ex:
+    print 'ERROR: %s' % ex
+finally:
+    if log_dict is None:
+        sys.exit(1)
 
+try:
+    logging.config.dictConfig(log_dict)
+except Exception as ex:
+    print ex
+    sys.exit(1)
 
 logger = logging.getLogger(__name__)
 
-
+logger.warning('hello!')
 
 MONGO_DB_URI = 'mongodb://localhost:27017/'
 

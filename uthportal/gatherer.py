@@ -12,7 +12,7 @@ import gevent.monkey
 gevent.monkey.patch_all()
 
 from pymongo import MongoClient
-from util import fetch_html
+from library.util import fetch_html
 
 client = MongoClient()
 
