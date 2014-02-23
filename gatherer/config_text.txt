@@ -1,0 +1,7 @@
+MONGO_DB Connection Info (uri, port)
+
+Intervals for updating db
+    Websites
+    Mails
+    Announcements
+    Food
