@@ -5,7 +5,7 @@ import logging
 import sys
 from Queue import PriorityQueue
 from pymongo import MongoClient
-from gatherer import fetch_courses
+from gatherer.gatherer import fetch_courses
 
 # Initialize logging
 LOGGING_FILE_PATH = 'logging.conf'
