@@ -5,10 +5,11 @@ import logging
 import logging.config
 import sys
 from Queue import PriorityQueue
-from pymongo import MongoClient
 from gatherer import fetch_courses
 
-# Initialize logging
+from pymongo import MongoClient
+
+# Initialize logging ##############################################
 LOGGING_FILE_PATH = 'logging.conf'
 
 try:
@@ -36,7 +37,7 @@ except Exception as ex:
 
 logger = logging.getLogger(__name__)
 
-logger.warning('hello!')
+################################################################
 
 MONGO_DB_URI = 'mongodb://localhost:27017/'
 
@@ -49,9 +50,10 @@ client = None
 db = None
 
 class QueueItem():
-    def __init__(self, function, priority, *args, **kargs):
+    def __init__(self, function, time, priority, *args, **kargs):
         self.priority = priority
         self.function = function
+        self.time = time
         self.args = args
         self.kargs = kargs
 
@@ -63,29 +65,44 @@ class QueueItem():
 
 
 def health_check():
+    from pymongo.errors import ConnectionFailure
+    global db, client
+
     try:
         client = MongoClient(MONGO_DB_URI)
         db = client.uthportal
-    except:
+    except ConnectionFailure:
+        logger.error('MongoDB connection failure at: %s' % MONGO_DB_URI)
         return False
+
+    return True
 
 def main():
     if not health_check():
-        return
+        logger.error('Health check FAILED! Terminating...')
+        sys.exit(1)
 
     init_db()
 
-    courses_codes = [ course.code for course in db.inf.courses.find() ]
-    for code in courses_codes:
-        tasks.put(QueueItem(PRIORITY_MEDIUM))
+    courses_codes = [ course['code'] for course in db.inf.courses.find() ]
+    #for code in courses_codes:
+    #    item = QueueItem(..)
+    #    tasks.put(QueueItem(PRIORITY_MEDIUM))
 
 def init_db():
     from data import courses_data
 
     # TODO: Check if db exists(else create), collections, documtents etc
 
+
     for course in courses_data:
-        db.inf.courses.insert(courses_data[course])
+        find_query = { 'code' : course }
+
+        if db['inf.courses'].find(find_query).count() > 0:
+            # TODO UPDATE
+            pass
+        else:
+            db['inf.courses'].insert(courses_data[course])
 
 if __name__ == '__main__':
     main()
