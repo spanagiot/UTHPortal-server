@@ -7,9 +7,9 @@
 # announcements of the department's courses
 
 import requests
-from bs4 import BeautifulSoup
-from bs4 import Tag
+from bs4 import BeautifulSoup, Tag
 from datetime import datetime
+from util import fetch_html, get_bsoup
 import string
 
 
@@ -302,8 +302,8 @@ def test_fetch_course_links():
         info = fetch_course_info(link)
 
         if isinstance(info, dict):
-            print(info['name'].encode('utf-8') + ': ' +
-                    info['link'].encode('utf-8'))
+            print(info['name'] + ':' +
+                    info['link'])
 
 
 if __name__ == '__main__':
