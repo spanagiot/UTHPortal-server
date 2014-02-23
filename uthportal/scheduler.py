@@ -2,12 +2,33 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import sys
 from Queue import PriorityQueue
 from pymongo import MongoClient
 from gatherer import fetch_courses
 
+# Initialize logging
+LOGGING_FILE_PATH = 'logging.conf'
+
+try:
+    import json
+
+    with open(LOGGING_FILE_PATH, 'r') as f:
+        log_json = f.read()
+
+    log_dict = json.loads(log_json)
+    logging.config.fileConfig(log_dict)
+except IOError:
+    print 'ERROR: Cannot read %s' % LOGGING_FILE_PATH
+    sys.exit(1)
+except ValueError:
+    print 'ERROR: File is not a valid JSON object'
+    sys.exit(1)
+
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+
+
 
 MONGO_DB_URI = 'mongodb://localhost:27017/'
 
@@ -20,7 +41,7 @@ client = None
 db = None
 
 class QueueItem():
-    def __init__(self, priority=0, function, *args, **kargs):
+    def __init__(self, function, priority, *args, **kargs):
         self.priority = priority
         self.function = function
         self.args = args
@@ -30,7 +51,7 @@ class QueueItem():
         return cmp(self.priority, other.priority)
 
     def run(self):
-        return self.function(*args, **kargs)
+        return self.function(self.args, self.kargs)
 
 
 def health_check():
@@ -39,7 +60,6 @@ def health_check():
         db = client.uthportal
     except:
         return False
-
 
 def main():
     if not health_check():
@@ -58,7 +78,6 @@ def init_db():
 
     for course in courses_data:
         db.inf.courses.insert(courses_data[course])
-
 
 if __name__ == '__main__':
     main()
