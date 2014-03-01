@@ -1,11 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from gatherer import fetch_courses
+'''
+gatherer imports gevent monkey and patches 'thread'
+this means that we have to FIRST import fetch_courses
+and then anything else that may import threading,
+otherwise Exception KeyError: KeyError is thrown.
+if threading module is loaded before monkey-patching,
+_get_ident() call returns one value when _MainThread instance is
+created and added to _active, and another value at the time
+_exitfunc() is called - hence KeyError in del _active[_get_ident()].
+'''
+import sys
 import logging
 import logging.config
-import sys
 from Queue import PriorityQueue
-from gatherer import fetch_courses
 
 from pymongo import MongoClient
 
