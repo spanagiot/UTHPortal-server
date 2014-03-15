@@ -18,7 +18,7 @@ server technology stack
 
 **gevent**, a coroutine-based networking library http://www.gevent.org/
 
-**Requests**, a HTTP library http://docs.python-requests.org/
+**Requests**, an HTTP library http://docs.python-requests.org/
 
 **Beautiful Soup**, a library for pulling data out of HTML and XML files http://www.crummy.com/software/BeautifulSoup/
 
