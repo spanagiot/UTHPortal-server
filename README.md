@@ -18,8 +18,8 @@ server technology stack
 
 **gevent**, a coroutine-based networking library http://www.gevent.org/
 
-**Requests**, a HTTP library http://www.crummy.com/software/BeautifulSoup/
+**Requests**, a HTTP library http://docs.python-requests.org/
 
 **Beautiful Soup**, a library for pulling data out of HTML and XML files http://www.crummy.com/software/BeautifulSoup/
 
-**Universal Feed Parser**, an Atom and RSS feed parser http://packages.python.org/
+**Universal Feed Parser**, an Atom and RSS feed parser https://pythonhosted.org/feedparser/
