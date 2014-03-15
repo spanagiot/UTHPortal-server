@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from gatherer import fetch_courses
+from gatherer import fetch_course, fetch_courses
 '''
 gatherer imports gevent monkey and patches 'thread'
 this means that we have to FIRST import fetch_courses
@@ -18,6 +18,9 @@ import logging.config
 from Queue import PriorityQueue
 
 from pymongo import MongoClient
+from datetime import datetime
+
+import gatherer
 
 # Initialize logging ##############################################
 LOGGING_FILE_PATH = 'logging.conf'
@@ -60,14 +63,16 @@ client = None
 db = None
 
 class QueueItem():
-    def __init__(self, function, time, priority, *args, **kargs):
+    def __init__(self, function, datetime, priority, *args, **kargs):
         self.priority = priority
         self.function = function
-        self.time = time
+        self.datetime = datetime
         self.args = args
         self.kargs = kargs
 
     def __cmp__(self, other):
+        if self.datetime != other.datetime:
+            return cmp(self.datetime, other.datetime)
         return cmp(self.priority, other.priority)
 
     def run(self):
@@ -94,16 +99,22 @@ def main():
 
     init_db()
 
+
+
+
     courses_codes = [ course['code'] for course in db.inf.courses.find() ]
-    #for code in courses_codes:
-    #    item = QueueItem(..)
-    #    tasks.put(QueueItem(PRIORITY_MEDIUM))
+    for code in courses_codes:
+        item = QueueItem()
+
+        function = fetch_course(
+        priority = PRIORITY_HIGH
+
+        tasks.put(item)
 
 def init_db():
     from data import courses_data
 
     # TODO: Check if db exists(else create), collections, documtents etc
-
 
     for course in courses_data:
         find_query = { 'code' : course }

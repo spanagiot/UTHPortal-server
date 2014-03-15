@@ -7,11 +7,11 @@
 # announcements of the department's courses
 
 import requests
+import string
 from bs4 import BeautifulSoup, Tag
 from datetime import datetime
 from util import fetch_html, get_bsoup
-import string
-
+from pymongo import MongoClient
 
 ### info.py ###################################################################
 
@@ -80,9 +80,6 @@ def update_course_info(info):
 # { 'date':date, 'time': time/None, 'html':html }
 # or even:
 # { 'date':date, 'time': time/None, 'link':link, 'html':html }
-
-# course parsing functions dictionary
-parsers = {}
 
 def ce120(bsoup):
     """
@@ -231,11 +228,72 @@ def ce232(bsoup):
     # return the date/content tuples
     return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
 
+def update_course(course_name, timeout_secs, n_tries):
+    client = MongoClient()
 
-# add the course parsing functions to the dictionary
-parsers['ce120'] = ce120
-parsers['ce121'] = ce121
-parsers['ce232'] = ce232
+    # Get the database
+    db = client.uthportal
+
+    # Set the query
+    query = {'code': course_name }
+
+    # Read from DB link to course
+    try:
+        print course_name
+        records = db.inf.courses.find(query)
+
+        if records.count() is 0:
+            # TODO: error
+            pass
+        if records.count() > 1:
+            # TODO: warning
+            pass
+
+        link = records[0]['announcements']['link']
+        if link is None:
+            # TODO: error
+            return
+
+    except Exception as ex:
+        print ex.message
+        return
+
+    # Try to fetch_html 'n_tries'
+    for i in xrange(n_tries):
+        html = fetch_html(link, timeout=timeout_secs)
+
+        if html is not None:
+            break
+        elif i is n_tries - 1:
+            return
+
+    # Get BeautifulSoup Object
+    try:
+        bsoup = get_bsoup(html)
+        if bsoup is None:
+            return
+    except Exception as ex:
+        print ex.message
+        return
+
+    # Parse the html and return the data
+    data = None
+    try:
+        function = globals()[course_name]
+        date = function(bsoup)
+    except Exception as ex:
+        print ex.message
+        return
+
+    # If data are valid update the db
+    if data is not None:
+        try:
+            update_query = { '$set': { 'announcements.site': data  } }
+            db.inf.courses.update(query, update_query)
+        except Exception as ex:
+            print ex.message
+
+
 
 ### /announcements.py #########################################################
 
