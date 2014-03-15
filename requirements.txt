@@ -1,29 +1,6 @@
-# Flask
-# micro web application framework
-# http://flask.pocoo.org/
 Flask
-
-# PyMongo
-# driver for MongoDB
-# http://api.mongodb.org/python/current/
 pymongo
-
-# Universal Feed Parser
-# Atom and RSS feed parser
-# http://packages.python.org/
-feedparser
-
-# Beautiful Soup
-# library for pulling data out of HTML and XML files
-# http://www.crummy.com/software/BeautifulSoup/
-beautifulsoup4
-
-# gevent
-# coroutine-based networking library
-# http://www.gevent.org/
 gevent
-
-# Requests
-# HTTP library
-# http://www.crummy.com/software/BeautifulSoup/
 requests
+beautifulsoup4
+feedparser

@@ -9,3 +9,17 @@ The server side component of the application gathers information from various so
 See also the mobile component of the application: [UTHPortal Android](https://github.com/VolosHack/UTHPortal-Android)
 
 A project of [VolosHack](http://voloshack.tk/), the University of Thessaly hacker group.
+
+server technology stack
+---
+**Flask**, a micro web application framework http://flask.pocoo.org/
+
+**PyMongo**, the Python driver for MongoDB http://api.mongodb.org/python/current/
+
+**gevent**, a coroutine-based networking library http://www.gevent.org/
+
+**Requests**, a HTTP library http://www.crummy.com/software/BeautifulSoup/
+
+**Beautiful Soup**, a library for pulling data out of HTML and XML files http://www.crummy.com/software/BeautifulSoup/
+
+**Universal Feed Parser**, an Atom and RSS feed parser http://packages.python.org/
