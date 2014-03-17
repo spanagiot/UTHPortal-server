@@ -122,12 +122,14 @@ def main():
             sleep(SLEEP_INTERVAL)
             continue
 
-        # Pop the next job
-        next_job = jobs[0]
-        db.queue.remove(next_job)
+        # Pop the next jobs (TODO: group jobs)
+        next_jobs = list()
+        for job in jobs:
+            next_jobs.append(job['code'])
+            db.queue.remove(job)
 
         # Fetch the course
-        fetch_course(next_job['code'])
+        fetch_courses(next_jobs)
 
 def init_db():
     from data import courses_data
@@ -144,24 +146,24 @@ def init_db():
             db['inf.courses'].insert(courses_data[course])
 
 
-def fetch_course(course_code, *args, **kargs):
-    fetch_courses( [ course_code ], *args, **kargs)
+def fetch_course(code, *args, **kargs):
+    fetch_courses( [ code ], *args, **kargs)
 
 
-def fetch_courses(courses_codes, n_workers=1, timeout_secs=10, n_tries=3):
+def fetch_courses(codes, n_workers=1, timeout_secs=10, n_tries=3):
     """
     """
 
     # Initialize a pool of 'n_workers' greenlets
-    n_workers = len(courses_codes)
+    n_workers = len(codes)
     worker_pool = Pool(n_workers)
 
     # Enqueue the tasks
-    for code in courses_codes:
-        update_course(code, timeout_secs, n_tries)
-        #worker_pool.spawn( update_course(code, timeout_secs, n_tries) )
+    for code in codes:
+        #update_course(code, timeout_secs, n_tries)
+        worker_pool.spawn( update_course, code, timeout_secs, n_tries )
 
-    #worker_pool.join()
+    worker_pool.join()
 
 
 if __name__ == '__main__':
