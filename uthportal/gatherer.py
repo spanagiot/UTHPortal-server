@@ -61,7 +61,8 @@ PRIORITY_LOW = 3
 PRIORITY_MEDIUM = 2
 PRIORITY_HIGH = 1
 
-tasks = PriorityQueue()
+SLEEP_INTERVAL = 2
+
 client = None
 db = None
 
@@ -104,21 +105,29 @@ def main():
 
     init_db()
 
-    courses_codes = [ course['code'] for course in db.inf.courses.find() ]
-    print courses_codes
+    logger.debug('Initializing succeed!')
 
-    db.jobs.update({}, { '$set': { 'queue': courses_codes } }, upsert=True)
+    courses_codes = [ course['code'] for course in db.inf.courses.find() ]
+
+    # Queue the jobs
+    for code in courses_codes:
+        db.queue.insert( {'code':code} )
 
     while True:
-        jobs_doc = db.jobs.find()
-        print jobs_doc[0]['queue']
-        if not jobs_doc[0]['queue']:
-            print 'sleep'
-            sleep(1)
+        # Get all the jobs from the queue
+        jobs = db.queue.find()
+        logger.debug('Got %d jobs!' % jobs.count())
+
+        if jobs.count() == 0:
+            sleep(SLEEP_INTERVAL)
             continue
 
-        fetch_course( jobs_doc[0]['queue'][0] )
-        db.jobs.update({ }, { '$pop': {'queue': -1 } } )
+        # Pop the next job
+        next_job = jobs[0]
+        db.queue.remove(next_job)
+
+        # Fetch the course
+        fetch_course(next_job['code'])
 
 def init_db():
     from data import courses_data
@@ -149,14 +158,14 @@ def fetch_courses(courses_codes, n_workers=1, timeout_secs=10, n_tries=3):
 
     # Enqueue the tasks
     for code in courses_codes:
-        worker_pool.spawn( update_course(code, timeout_secs, n_tries) )
+        update_course(code, timeout_secs, n_tries)
+        #worker_pool.spawn( update_course(code, timeout_secs, n_tries) )
 
-    worker_pool.join()
+    #worker_pool.join()
+
 
 if __name__ == '__main__':
     main()
-
-
 
 # Spawn workers till there are no more tasks
 #while ( not task_queue.empty() ):
