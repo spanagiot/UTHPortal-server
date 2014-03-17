@@ -294,8 +294,11 @@ def update_course(code, timeout_secs, n_tries):
     # If data are valid update the db
     if data is not None:
         try:
-            update_query = { '$set': { 'announcements.site': data  } }
-            db.inf.courses.update(query, update_query)
+            # Update the announcements & last_updated
+            site_update_query = { '$set': { 'announcements.site': data  } }
+            date_update_query = { '$set': { 'announcements.last_updated': datetime.now() } }
+            db.inf.courses.update(query, site_update_query)
+            db.inf.courses.update(query, date_update_query)
         except Exception as ex:
             logger.warning(ex.message)
             return False
