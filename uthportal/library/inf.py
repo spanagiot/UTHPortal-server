@@ -6,12 +6,20 @@
 # parsing functions for announcements of the department and information and
 # announcements of the department's courses
 
+import logging
 import requests
 import string
 from bs4 import BeautifulSoup, Tag
 from datetime import datetime
 from util import fetch_html, get_bsoup
 from pymongo import MongoClient
+
+logger = logging.getLogger()
+
+client = MongoClient()
+# Get the database
+db = client.uthportal
+
 
 ### info.py ###################################################################
 
@@ -228,36 +236,31 @@ def ce232(bsoup):
     # return the date/content tuples
     return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
 
-def update_course(course_name, timeout_secs, n_tries):
-    client = MongoClient()
-
-    # Get the database
-    db = client.uthportal
-
+def update_course(code, timeout_secs, n_tries):
     # Set the query
-    query = {'code': course_name }
+    query = {'code': code }
 
     # Read from DB link to course
     try:
-        print course_name
         records = db.inf.courses.find(query)
 
         if records.count() is 0:
-            # TODO: error
-            pass
+            logger.error('No entry found for "%s"' % code)
+            return False
+
         if records.count() > 1:
-            # TODO: warning
-            pass
+            logger.warning('Multiple entries found for "%s"' % code)
 
         link = records[0]['announcements']['link']
         if link is None:
-            # TODO: error
-            return
+            logger.warning('Course "%s" does not have "link" field' % code)
+            return False
 
     except Exception as ex:
-        print ex.message
-        return
+        logger.warning(ex.message)
+        return False
 
+    logger.debug('Fetching course %s' % code)
     # Try to fetch_html 'n_tries'
     for i in xrange(n_tries):
         html = fetch_html(link, timeout=timeout_secs)
@@ -265,25 +268,28 @@ def update_course(course_name, timeout_secs, n_tries):
         if html is not None:
             break
         elif i is n_tries - 1:
-            return
+            return False
 
+    logger.debug('Getting BeautifulSoup object')
     # Get BeautifulSoup Object
     try:
         bsoup = get_bsoup(html)
         if bsoup is None:
-            return
+            return False
     except Exception as ex:
-        print ex.message
-        return
+        logger.warning(ex.message)
+        return False
 
+    logger.debug('Trying to parse...')
     # Parse the html and return the data
-    data = None
     try:
-        function = globals()[course_name]
-        date = function(bsoup)
+        parser = globals()[code]
+        data = parser(bsoup)
     except Exception as ex:
-        print ex.message
-        return
+        logger.warning(ex.message)
+        return False
+
+    logger.debug('Updating database...')
 
     # If data are valid update the db
     if data is not None:
@@ -291,9 +297,11 @@ def update_course(course_name, timeout_secs, n_tries):
             update_query = { '$set': { 'announcements.site': data  } }
             db.inf.courses.update(query, update_query)
         except Exception as ex:
-            print ex.message
+            logger.warning(ex.message)
+            return False
 
-
+    logger.debug('Successfull run!')
+    return True
 
 ### /announcements.py #########################################################
 
