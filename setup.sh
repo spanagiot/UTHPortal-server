@@ -24,6 +24,11 @@ if ! command -v pip &> /dev/null; then
     sudo apt-get install python-pip
 fi
 
+# install dependencies of gevent
+# TODO
+# check whether the packages are already installed
+sudo apt-get install build-essential python-dev
+
 # option to install required modules
 while true; do
     read -e -p "do you want to install the required Python modules? (y/n): " REQUIREMENTS_ANSWER
@@ -68,6 +73,8 @@ install_mongodb() {
 
 # check whether MongoDB is already installed
 # http://askubuntu.com/questions/17823/how-to-list-all-installed-packages
+# TODO
+# simplify the installation check
 if ! dpkg --get-selections | grep mongodb &> /dev/null; then
     if ! command -v mongo &> /dev/null; then
         install_mongodb
