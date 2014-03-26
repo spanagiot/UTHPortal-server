@@ -18,14 +18,14 @@ MongoDB
 
 Python modules
 ---
-**[Flask](http://flask.pocoo.org/)** a micro web application framework
+**[Flask](http://flask.pocoo.org/)** : lightweight web application framework
 
-**PyMongo**, the Python driver for MongoDB http://api.mongodb.org/python/current/
+**[PyMongo](http://api.mongodb.org/python/current/)** : driver for MongoDB
 
-**gevent**, a coroutine-based networking library http://www.gevent.org/
+**[gevent](http://www.gevent.org/)** : coroutine-based networking library
 
-**Requests**, an HTTP library http://docs.python-requests.org/
+**[Requests](http://docs.python-requests.org/)** : HTTP library
 
-**Beautiful Soup**, a library for pulling data out of HTML and XML files http://www.crummy.com/software/BeautifulSoup/
+**[Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/)** : library for pulling data out of HTML and XML files
 
-**Universal Feed Parser**, an Atom and RSS feed parser https://pythonhosted.org/feedparser/
+**[Universal Feed Parser](https://pythonhosted.org/feedparser/)** : Atom and RSS feed parser
