@@ -29,7 +29,7 @@ while true; do
     read -e -p "do you want to install the required Python modules? (y/n): " REQUIREMENTS_ANSWER
     case $REQUIREMENTS_ANSWER in
         [Yy]*)
-            pip install -r requirements.txt
+            sudo pip install -r requirements.txt
             break
             ;;
         [Nn]*)
