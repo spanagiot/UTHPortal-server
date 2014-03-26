@@ -12,20 +12,20 @@ A project of [VolosHack](http://voloshack.tk/), the University of Thessaly hacke
 
 server technology stack
 ---
-**[Python](https://www.python.org/)** widely used, general-purpose, high-level programming language
+**[Python](https://www.python.org/)**: widely used, general-purpose, high-level programming language
 
-**[MongoDB](https://www.mongodb.org/)** document-oriented database
+**[MongoDB](https://www.mongodb.org/)**: document-oriented database
 
 Python modules
 ---
-**[Flask](http://flask.pocoo.org/)** lightweight web application framework
+**[Flask](http://flask.pocoo.org/)**: lightweight web application framework
 
-**[PyMongo](http://api.mongodb.org/python/current/)** driver for MongoDB
+**[PyMongo](http://api.mongodb.org/python/current/)**: driver for MongoDB
 
-**[gevent](http://www.gevent.org/)** coroutine-based networking library
+**[gevent](http://www.gevent.org/)**: coroutine-based networking library
 
-**[Requests](http://docs.python-requests.org/)** HTTP library
+**[Requests](http://docs.python-requests.org/)**: HTTP library
 
-**[Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/)** library for pulling data out of HTML and XML files
+**[Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/)**: library for pulling data out of HTML and XML files
 
-**[Universal Feed Parser](https://pythonhosted.org/feedparser/)** Atom and RSS feed parser
+**[Universal Feed Parser](https://pythonhosted.org/feedparser/)**: Atom and RSS feed parser
