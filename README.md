@@ -12,6 +12,12 @@ A project of [VolosHack](http://voloshack.tk/), the University of Thessaly hacke
 
 server technology stack
 ---
+Python
+
+MongoDB
+
+Python modules
+---
 **Flask**, a micro web application framework http://flask.pocoo.org/
 
 **PyMongo**, the Python driver for MongoDB http://api.mongodb.org/python/current/
