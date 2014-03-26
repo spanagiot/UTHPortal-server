@@ -17,9 +17,7 @@ fi
 install_mongodb() {
     # http://docs.mongodb.org/manual/tutorial/install-mongodb-on-debian/
 
-    echo
-    echo "MongoDB installation"
-    echo
+    echo "installing MongoDB"
 
     ### Configure Package Management System (APT)
     # Import MongoDB PGP key.
@@ -32,19 +30,15 @@ install_mongodb() {
     ### Install Packages
     sudo apt-get install mongodb-10gen
 
-    echo
     echo "MongoDB successfully installed"
-    echo
 }
 
 # check whether MongoDB is already installed
 # http://askubuntu.com/questions/17823/how-to-list-all-installed-packages
 if ! dpkg --get-selections | grep mongodb &> /dev/null; then
-    install_mongodb
-else
-    echo
-    echo "MongoDB is already installed (probably :P )"
-    echo
+    if ! command -v mongo &> /dev/null; then
+        install_mongodb
+    fi
 fi
 
 ### /MongoDB ##################################################################
