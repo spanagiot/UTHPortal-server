@@ -11,6 +11,39 @@ if ! command -v dpkg &> /dev/null; then
 fi
 
 
+### Python and modules ########################################################
+
+# install Python 2.7
+if ! command -v python2.7 &> /dev/null; then
+    echo "installing Python 2.7"
+    sudo apt-get install python2.7
+fi
+# install pip
+if ! command -v pip &> /dev/null; then
+    echo "installing pip"
+    sudo apt-get install python-pip
+fi
+
+# option to install required modules
+while true; do
+    read -e -p "do you want to install the required Python modules? (y/n): " REQUIREMENTS_ANSWER
+    case $REQUIREMENTS_ANSWER in
+        [Yy]*)
+            pip install -r requirements.txt
+            break
+            ;;
+        [Nn]*)
+            break
+            ;;
+        *)
+            echo "please enter \"y\" for yes or \"n\" for no"
+            ;;
+    esac
+done
+
+### /Python and modules #######################################################
+
+
 ### MongoDB ###################################################################
 
 ### install MongoDB
