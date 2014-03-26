@@ -29,3 +29,7 @@ Python modules
 **[Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/)**: library for pulling data out of HTML and XML files
 
 **[Universal Feed Parser](https://pythonhosted.org/feedparser/)**: Atom and RSS feed parser
+
+development
+---
+Clone or download the repository and run the setup script to setup a development environment for the UTHPortal server.

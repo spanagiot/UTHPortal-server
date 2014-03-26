@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # setup.sh
-# setup the UTHPortal server
+# setup a development environment for the UTHPortal server
 
 
 ### verify that the script is run in a Debian system or a derivative
