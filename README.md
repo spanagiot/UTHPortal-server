@@ -18,7 +18,7 @@ MongoDB
 
 Python modules
 ---
-**Flask**, a micro web application framework http://flask.pocoo.org/
+**[Flask](http://flask.pocoo.org/)** a micro web application framework
 
 **PyMongo**, the Python driver for MongoDB http://api.mongodb.org/python/current/
 
