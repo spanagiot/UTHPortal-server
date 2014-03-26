@@ -10,7 +10,7 @@ See also the mobile component of the application: [UTHPortal Android](https://gi
 
 A project of [VolosHack](http://voloshack.tk/), the University of Thessaly hacker group.
 
-server technology stack
+technology stack
 ---
 **[Python](https://www.python.org/)**: widely used, general-purpose, high-level programming language
 
