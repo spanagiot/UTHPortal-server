@@ -33,3 +33,7 @@ Python modules
 development
 ---
 Clone or download the repository and run the setup script to setup a development environment for the UTHPortal server.
+
+license
+---
+licensed under the MIT license, see [LICENSE.md](LICENSE.md)
