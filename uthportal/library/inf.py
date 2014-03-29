@@ -280,7 +280,10 @@ def ce321(bsoup):
     return announce_list
 
 def ce420(bsoup):
-    ce120(bsoup)
+    return ce120(bsoup)
+
+def ce134(bsoup)
+    return ce232
 
 def update_course(code, timeout_secs, n_tries):
     # Set the query
