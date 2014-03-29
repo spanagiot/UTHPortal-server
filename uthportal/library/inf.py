@@ -164,7 +164,7 @@ def ce121(bsoup):
             announce_region.name == 'ul':
                 break
 
-        announce_region = announce_region.next_sibling
+        announce_region = announce_region.next_sibling()
 
     # Parse the announcements
     announce_list = []
@@ -231,7 +231,7 @@ def ce232(bsoup):
     for dd_elements in dd_contents:
         content = u''
         for element in dd_elements:
-            content += element.encode('utf-8')
+            content += unicode(element)
         contents.append( content.strip() )
 
     # return the date/content tuples
@@ -282,8 +282,8 @@ def ce321(bsoup):
 def ce420(bsoup):
     return ce120(bsoup)
 
-def ce134(bsoup)
-    return ce232
+def ce134(bsoup):
+    return ce232(bsoup)
 
 def update_course(code, timeout_secs, n_tries):
     # Set the query
