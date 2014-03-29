@@ -249,6 +249,84 @@ def ce536(bsoup):
 def ce538(bsoup):
     ce232(bsoup)
 
+def ce230(bsoup):
+    """
+        course 230: ΗΥ 230 ΑΝΑΛΥΣΗ ΚΥΚΛΩΜΑΤΩΝ
+        
+        HTML format:
+        <h1>
+        
+        </h1>
+        <!-- begin content area -->
+        <dt><b>date</b></dt>
+        <dd>announcement 1</dd>
+        </dl>
+        <br/>
+        
+        <dt><b>date</b></dt>
+        <dd>announcement 2</dd>
+        </dl>
+        <br/>
+        
+        ....
+        <!-- end content area -->
+        
+        """
+    
+    dates_raw = [date.find('b').text.strip() for date in bsoup.find_all('dt')]
+    
+    dates = [datetime.strptime(date, '%d/%m/%Y') for date in dates_raw]
+    
+    contents = []
+    
+    # create a list  of announcement html contents
+    dd_contents = bsoup.find_all('dd')
+    for dd_elements in dd_contents:
+        content = u''
+        for element in dd_elements:
+            content += element.encode('utf-8')
+        contents.append( content.strip())
+    
+    #return the date/content
+    
+    return[ {'date':date,'html':html, 'has_time':False} for(date, html) in zip(dates,contents) ]
+
+
+def ce321(bsoup):
+    """
+        course: ce321 : Λειτουργικα Συστηματα
+        
+        HTML format:
+        
+        <span class="date"> #date1# </span> #announce1#
+        
+        
+        <span class="date"> #date2# </span> #announce2#
+        
+        ...
+        
+        """
+    
+    for announce in find_all('span', 'color:#')
+        
+        # Get date, remove any unwanted punctuation and convert to datetime
+        
+        date_string = announce.text.strip(string.punctuation)
+        date = datetime.strptime(date_string, '%d/%m/%Y')
+        parts = []
+        
+        # Get the parts of the announcement
+        for parts in announce.next_sibling:
+            parts.append(unicode(part))
+        
+        # convert list to unicode
+        announce_html = (''.join( parts )).strip()
+        
+        # Add the new announcement as dictionary
+        announce_list.append( {'date':date, 'html':announce_html, 'has_time': False } )
+    # Return the list of announcements
+    return announce_list
+
 def update_course(code, timeout_secs, n_tries):
     # Set the query
     query = {'code': code }
