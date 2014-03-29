@@ -240,6 +240,11 @@ def ce232(bsoup):
 def ce431(bsoup):
     ce232(bsoup)
 
+def ce536(bsoup):
+    dates = [datetime.strptime(date_element.text.strip(), '%d/%m/%Y') for date_element in bsoup.select('dt > b')]
+    contents = [ann_element.text.strip() for ann_element in bsoup.select('dt + dd')]
+    return [ {'date': date, 'html': html, 'has_time': False} for (date, html) in zip(dates, contents) ]
+
 def ce538(bsoup):
     ce232(bsoup)
 
