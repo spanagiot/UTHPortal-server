@@ -124,7 +124,8 @@ def ce120(bsoup):
         for part in announce.next_siblings:
             if part.name is 'span' or part.name is 'p':
                 break
-            parts.append( unicode(part) )
+            #print unicode(part)
+            parts.append( unicode(part).encode('utf-8') )
 
         # convert list to unicode
         announce_html = (''.join( parts )).strip()
@@ -257,7 +258,7 @@ def update_course(code, timeout_secs, n_tries):
             return False
 
     except Exception as ex:
-        logger.warning(ex.message)
+        logger.warning(ex)
         return False
 
     logger.debug('Fetching course %s' % code)
@@ -277,7 +278,7 @@ def update_course(code, timeout_secs, n_tries):
         if bsoup is None:
             return False
     except Exception as ex:
-        logger.warning(ex.message)
+        logger.warning(ex)
         return False
 
     logger.debug('Trying to parse...')
@@ -286,7 +287,7 @@ def update_course(code, timeout_secs, n_tries):
         parser = globals()[code]
         data = parser(bsoup)
     except Exception as ex:
-        logger.warning(ex.message)
+        logger.warning(ex)
         return False
 
     logger.debug('Updating database...')
@@ -295,12 +296,12 @@ def update_course(code, timeout_secs, n_tries):
     if data is not None:
         try:
             # Update the announcements & last_updated
-            site_update_query = { '$set': { 'announcements.site': data  } }
+            site_update_query = { '$set': { 'announcements.site': data } }
             date_update_query = { '$set': { 'announcements.last_updated': datetime.now() } }
             db.inf.courses.update(query, site_update_query)
             db.inf.courses.update(query, date_update_query)
         except Exception as ex:
-            logger.warning(ex.message)
+            logger.warning(ex)
             return False
 
     logger.debug('Successfull run!')
