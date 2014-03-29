@@ -280,7 +280,10 @@ def ce321(bsoup):
     return announce_list
 
 def ce420(bsoup):
-    ce120(bsoup)
+    return ce120(bsoup)
+
+def ce134(bsoup)
+    return ce232
 
 def update_course(code, timeout_secs, n_tries):
     # Set the query
@@ -426,6 +429,7 @@ def announcements_general(bsoup):
         #add to announcements
         announcements.append( announcement )
 
+
     return announcements
 
 def announcements_graduates():
@@ -435,7 +439,7 @@ def announcements_graduates():
     """
     pass
 
-def test_announcements():
+def update_announcements():
     link = 'http://www.inf.uth.gr/cced/?cat=24'
 
     html = fetch_html(link)
@@ -443,7 +447,18 @@ def test_announcements():
 
     ann_list = announcements_general(bsoup)
 
-    print ann_list[0]['title']
+    # Create the dictionary
+    db_doc = { }
+    db_doc['name'] = 'announcements_general'
+    db_doc['link'] = link
+    db_doc['announcements'] = ann_list
+
+    # Update the database
+    find_query = { 'name' : 'announcements_general' }
+    update_query = { '$set' : db_doc }
+
+    db.inf.announcements.update(find_query, update_query, upsert=True)
+
 
 ### testing code
 def test_fetch_course_links():

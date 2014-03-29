@@ -20,7 +20,8 @@ from time import sleep
 from Queue import PriorityQueue
 
 from library.util import fetch_html, get_bsoup
-from library.inf import update_course
+from library.inf import update_course, update_announcements
+from library.food import fetch_food_menu
 
 from pymongo import MongoClient
 from datetime import datetime
@@ -106,6 +107,10 @@ def main():
     init_db()
 
     logger.debug('Initializing succeed!')
+
+
+    fetch_food_menu()
+    update_announcements()
 
     courses_codes = [ course['code'] for course in db.inf.courses.find() ]
 
