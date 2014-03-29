@@ -7,6 +7,8 @@ import flask
 from pymongo import MongoClient
 from json import JSONEncoder
 
+from bs4 import BeautifulSoup
+
 app = flask.Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config['JSON_SORT_KEYS'] = True
@@ -36,6 +38,7 @@ app.json_encoder = BSONEncoderEx
 def show_courses():
     db_courses = client.uthportal.inf.courses.find()
 
+    # Remove not needed keys #
     courses = [ ]
     for doc in db_courses:
         del doc['announcements']
@@ -49,6 +52,10 @@ def show_courses():
 @app.route('/inf/courses/<course_name>')
 def show_course(course_name):
     db_doc = client.uthportal.inf.courses.find_one({'code':course_name })
+
+    for (i, item) in enumerate(db_doc['announcements']['site']):
+        db_doc['announcements']['site'][i]['plaintext'] = BeautifulSoup(item['html']).text
+
     if isinstance(db_doc, dict):
         return flask.jsonify(db_doc)
     else:
