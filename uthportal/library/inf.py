@@ -429,9 +429,6 @@ def announcements_general(bsoup):
 
     return announcements
 
-
-
-
 def announcements_graduates():
     """
     graduates announcements
@@ -447,8 +444,15 @@ def update_announcements():
 
     ann_list = announcements_general(bsoup)
 
+    # Create the dictionary
+    db_doc = { }
+    db_doc['name'] = 'announcements_general'
+    db_doc['link'] = link
+    db_doc['announcements'] = ann_list
+
+    # Update the database
     find_query = { 'name' : 'announcements_general' }
-    update_query = { '$set' : { 'announcements' : ann_list } }
+    update_query = { '$set' : db_doc }
 
     db.inf.announcements.update(find_query, update_query, upsert=True)
 

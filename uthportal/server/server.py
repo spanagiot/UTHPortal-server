@@ -61,6 +61,18 @@ def show_course(course_name):
     else:
         flask.abort(HTTPCODE_NOT_FOUND)
 
+@app.route('/inf/announcements')
+def show_announcements():
+    db_doc = client.uthportal.inf.announcements.find_one()
+
+    #for(i, item) in enumerate(db_doc['announcements']):
+     #   db_doc['announcements'][i]['plaintext'] = BeautifulSoup(item['html']).text
+
+    if isinstance(db_doc, dict):
+        return flask.jsonify(db_doc)
+    else:
+        flask.abort(HTTPCODE_NOT_IMPLEMENTED)
+
 @app.route('/uth/food-menu')
 def show_food_menu():
     db_doc = client.uthportal.uth.food_menu.find_one({'name':'food_menu'})
