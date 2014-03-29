@@ -327,6 +327,9 @@ def ce321(bsoup):
     # Return the list of announcements
     return announce_list
 
+def ce420(bsoup):
+    ce120(bsoup)
+
 def update_course(code, timeout_secs, n_tries):
     # Set the query
     query = {'code': code }
