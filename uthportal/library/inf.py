@@ -372,13 +372,29 @@ def announcements_general(bsoup):
 
     #loop thorugh articles
     for article in articles:
+        #initialize announcement dictionary
+        announcement = {}
+
         # get left part
         left = article.find('div', class_='loop-entry-left')
         date_post = left.find('div', class_= 'post-meta').find('div', class_ = 'post-date')
-        date_str = date_post.text
-        return parse_greek_date( date_str )
-    return "a"
+        announcement['date'] = parse_greek_date( date_post.text )
 
+        #get right part
+        right = article.find('div', class_='loop-entry-right')
+
+        announcement['title'] = right.h2.a['title']
+        announcement['link'] = right.h2.a['href']
+
+        paragraphs = right.find_all( 'p' )
+
+        #join all paragraps to a single html
+        announcement['html'] = '\n'.join( [unicode(p) for p in paragraphs] )
+
+        #add to announcements
+        announcements.append( announcement )
+
+    return announcements
 
 def announcements_graduates():
     """
@@ -395,7 +411,7 @@ def test_announcements():
 
     ann_list = announcements_general(bsoup)
 
-    print ann_list
+    print ann_list[0]['title']
 
 ### testing code
 def test_fetch_course_links():
