@@ -238,7 +238,7 @@ def ce232(bsoup):
     return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
 
 def ce431(bsoup):
-    ce232(bsoup)
+    return ce232(bsoup)
 
 def ce536(bsoup):
     dates = [datetime.strptime(date_element.text.strip(), '%d/%m/%Y') for date_element in bsoup.select('dt > b')]
@@ -246,46 +246,10 @@ def ce536(bsoup):
     return [ {'date': date, 'html': html, 'has_time': False} for (date, html) in zip(dates, contents) ]
 
 def ce538(bsoup):
-    ce232(bsoup)
+    return ce232(bsoup)
 
 def ce230(bsoup):
-    """
-    course 230: ΗΥ 230 ΑΝΑΛΥΣΗ ΚΥΚΛΩΜΑΤΩΝ
-
-    HTML format:
-    <h1>
-
-        </h1>
-        <!-- begin content area -->
-        <dt><b>date</b></dt>
-        <dd>announcement 1</dd>
-        </dl>
-        <br/>
-
-        <dt><b>date</b></dt>
-        <dd>announcement 2</dd>
-        </dl>
-        <br/>
-
-        ....
-        <!-- end content area -->
-
-    """
-    dates_raw = [date.find('b').text.strip() for date in bsoup.find_all('dt')]
-    dates = [datetime.strptime(date, '%d/%m/%Y') for date in dates_raw]
-    contents = []
-
-    # create a list  of announcement html contents
-    dd_contents = bsoup.find_all('dd')
-    for dd_elements in dd_contents:
-        content = u''
-        for element in dd_elements:
-            content += element.encode('utf-8')
-        contents.append( content.strip())
-
-    #return the date/content
-    return [ {'date':date,'html':html, 'has_time':False} for(date, html) in zip(dates,contents) ]
-
+    return ce232(bsoup)
 
 def ce321(bsoup):
     """
