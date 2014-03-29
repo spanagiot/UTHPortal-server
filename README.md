@@ -10,16 +10,30 @@ See also the mobile component of the application: [UTHPortal Android](https://gi
 
 A project of [VolosHack](http://voloshack.tk/), the University of Thessaly hacker group.
 
-server technology stack
+technology stack
 ---
-**Flask**, a micro web application framework http://flask.pocoo.org/
+**[Python](https://www.python.org/)**: widely used, general-purpose, high-level programming language
 
-**PyMongo**, the Python driver for MongoDB http://api.mongodb.org/python/current/
+**[MongoDB](https://www.mongodb.org/)**: document-oriented database
 
-**gevent**, a coroutine-based networking library http://www.gevent.org/
+Python modules
+---
+**[Flask](http://flask.pocoo.org/)**: lightweight web application framework
 
-**Requests**, an HTTP library http://docs.python-requests.org/
+**[PyMongo](http://api.mongodb.org/python/current/)**: driver for MongoDB
 
-**Beautiful Soup**, a library for pulling data out of HTML and XML files http://www.crummy.com/software/BeautifulSoup/
+**[gevent](http://www.gevent.org/)**: coroutine-based networking library
 
-**Universal Feed Parser**, an Atom and RSS feed parser https://pythonhosted.org/feedparser/
+**[Requests](http://docs.python-requests.org/)**: HTTP library
+
+**[Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/)**: library for pulling data out of HTML and XML files
+
+**[Universal Feed Parser](https://pythonhosted.org/feedparser/)**: Atom and RSS feed parser
+
+development
+---
+Clone or download the repository and run the setup script to setup a development environment for the UTHPortal server.
+
+license
+---
+licensed under the MIT license, see [LICENSE.md](LICENSE.md)
