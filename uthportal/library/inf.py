@@ -9,6 +9,7 @@
 import logging
 import requests
 import string
+from util import parse_greek_date
 from bs4 import BeautifulSoup, Tag
 from datetime import datetime
 from util import fetch_html, get_bsoup
@@ -310,7 +311,7 @@ def update_course(code, timeout_secs, n_tries):
 ### /announcements.py #########################################################
 
 
-def announcements_general():
+def announcements_general(bsoup):
     """
     general announcements
 
@@ -349,7 +350,23 @@ def announcements_general():
             </div>
         </div>
     """
-    pass
+    #initialize announcement list
+    announcements = []
+
+    # get post containining announcements
+    posts = bsoup.find(id='post')
+
+    # get articles from post
+    articles =  posts.find_all('article', class_='loop-entry clearfix')
+
+    #loop thorugh articles
+    for article in articles:
+        # get left part
+        left = article.find('div', class_='loop-entry-left')
+        date_post = left.find('div', class_= 'post-meta').find('div', class_ = 'post-date')
+        date_str = date_post.text
+        return parse_greek_date( date_str )
+    return "a"
 
 
 def announcements_graduates():
@@ -359,6 +376,15 @@ def announcements_graduates():
     """
     pass
 
+def test_announcements():
+    link = 'http://www.inf.uth.gr/cced/?cat=24'
+
+    html = fetch_html(link)
+    bsoup = get_bsoup(html)
+
+    ann_list = announcements_general(bsoup)
+
+    print ann_list
 
 ### testing code
 def test_fetch_course_links():
@@ -379,4 +405,4 @@ def test_fetch_course_links():
 if __name__ == '__main__':
     """
     """
-    test_fetch_course_links()
+    test_announcements()
