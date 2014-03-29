@@ -237,6 +237,12 @@ def ce232(bsoup):
     # return the date/content tuples
     return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
 
+def ce431(bsoup):
+    ce232(bsoup)
+
+def ce538(bsoup):
+    ce232(bsoup)
+
 def update_course(code, timeout_secs, n_tries):
     # Set the query
     query = {'code': code }
