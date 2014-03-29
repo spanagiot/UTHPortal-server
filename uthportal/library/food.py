@@ -100,11 +100,14 @@ def _parse_html(html):
     dinner = [ cells[41:48], cells[49:56], cells[57:64] ]
 
     # create the menu dictionary
-    menu = {}
+    menu = list()
     for i in xrange(7):
-        menu[ weekdays[i] ] = {}
-        menu[ weekdays[i] ]['lunch' ] = { 'main': lunch[0][i], 'salad': lunch[1][i], 'desert': lunch[2][i] }
-        menu[ weekdays[i] ]['dinner'] = { 'main': dinner[0][i], 'salad': dinner[1][i], 'desert': dinner[2][i] }
+        day_menu = dict()
+        day_menu['name'] = weekdays[i]
+        day_menu['lunch' ] = { 'main': lunch[0][i], 'salad': lunch[1][i], 'desert': lunch[2][i] }
+        day_menu['dinner'] = { 'main': dinner[0][i], 'salad': dinner[1][i], 'desert': dinner[2][i] }
+
+        menu.append(day_menu)
 
     return menu
 
@@ -171,28 +174,28 @@ def fetch_food_menu( date=datetime.today() ):
     file_html.close()
 
     try:
-        food_menu_dict = _parse_html(html)
-        for (i,day) in enumerate(weekdays):
+        food_menu = _parse_html(html)
+        for i in xrange(7):
             date_ = monday + timedelta(days=i)
-            food_menu_dict[day]['date'] = _date_to_datetime(date_)
+            food_menu[i]['date'] = _date_to_datetime(date_)
 
     except Exception as exception:
         print exception.message
         return None
 
     try:
-        _update_database(food_menu_dict, monday)
+        _update_database(food_menu, monday)
     except OperationFailure:
         # TODO: Logging
-        print 'AAA'
         pass
 
-    return food_menu_dict
+    return food_menu
 
 
 # testing code
 if __name__ == '__main__':
-    menu = fetch_food_menu(datetime(year=2014, month=1, day=23))
+    menu = fetch_food_menu(datetime.now() )
+    #menu = fetch_food_menu(datetime(year=2014, month=1, day=23))
 
     """
     if isinstance(menu, dict):
