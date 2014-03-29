@@ -56,6 +56,9 @@ def fetch_html(link, timeout=8.0):
         logger.warning("fetch_html: could not retrieve" + '\n\t' + link)
         return None
 
+    # Special treatment needed for other encodings
+    page.encoding = 'utf-8'
+
     return page.text
 
 

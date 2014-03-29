@@ -6,11 +6,19 @@
 # parsing functions for announcements of the department and information and
 # announcements of the department's courses
 
+import logging
 import requests
+import string
 from bs4 import BeautifulSoup, Tag
 from datetime import datetime
 from util import fetch_html, get_bsoup
-import string
+from pymongo import MongoClient
+
+logger = logging.getLogger()
+
+client = MongoClient()
+# Get the database
+db = client.uthportal
 
 
 ### info.py ###################################################################
@@ -81,9 +89,6 @@ def update_course_info(info):
 # or even:
 # { 'date':date, 'time': time/None, 'link':link, 'html':html }
 
-# course parsing functions dictionary
-parsers = {}
-
 def ce120(bsoup):
     """
     course: ce120 : Προγραμματισμός 1
@@ -119,7 +124,8 @@ def ce120(bsoup):
         for part in announce.next_siblings:
             if part.name is 'span' or part.name is 'p':
                 break
-            parts.append( unicode(part) )
+            #print unicode(part)
+            parts.append( unicode(part).encode('utf-8') )
 
         # convert list to unicode
         announce_html = (''.join( parts )).strip()
@@ -231,11 +237,75 @@ def ce232(bsoup):
     # return the date/content tuples
     return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
 
+def update_course(code, timeout_secs, n_tries):
+    # Set the query
+    query = {'code': code }
 
-# add the course parsing functions to the dictionary
-parsers['ce120'] = ce120
-parsers['ce121'] = ce121
-parsers['ce232'] = ce232
+    # Read from DB link to course
+    try:
+        records = db.inf.courses.find(query)
+
+        if records.count() is 0:
+            logger.error('No entry found for "%s"' % code)
+            return False
+
+        if records.count() > 1:
+            logger.warning('Multiple entries found for "%s"' % code)
+
+        link = records[0]['announcements']['link']
+        if link is None:
+            logger.warning('Course "%s" does not have "link" field' % code)
+            return False
+
+    except Exception as ex:
+        logger.warning(ex)
+        return False
+
+    logger.debug('Fetching course %s' % code)
+    # Try to fetch_html 'n_tries'
+    for i in xrange(n_tries):
+        html = fetch_html(link, timeout=timeout_secs)
+
+        if html is not None:
+            break
+        elif i is n_tries - 1:
+            return False
+
+    logger.debug('Getting BeautifulSoup object')
+    # Get BeautifulSoup Object
+    try:
+        bsoup = get_bsoup(html)
+        if bsoup is None:
+            return False
+    except Exception as ex:
+        logger.warning(ex)
+        return False
+
+    logger.debug('Trying to parse...')
+    # Parse the html and return the data
+    try:
+        parser = globals()[code]
+        data = parser(bsoup)
+    except Exception as ex:
+        logger.warning(ex)
+        return False
+
+    logger.debug('Updating database...')
+
+    # If data are valid update the db
+    if data is not None:
+        try:
+            # Update the announcements & last_updated
+            site_update_query = { '$set': { 'announcements.site': data } }
+            date_update_query = { '$set': { 'announcements.last_updated': datetime.now() } }
+            db.inf.courses.update(query, site_update_query)
+            db.inf.courses.update(query, date_update_query)
+        except Exception as ex:
+            logger.warning(ex)
+            return False
+
+    logger.debug('Successfull run!')
+    return True
 
 ### /announcements.py #########################################################
 

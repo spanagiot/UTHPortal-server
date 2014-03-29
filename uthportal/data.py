@@ -11,7 +11,7 @@ courses_data['ce120'] = { 'code': 'ce120',
                                 'last_updated': u''
                             },
                             'info': {
-                                'name': 'Προγραμμτισμός Ι',
+                                'name': 'Προγραμματισμός Ι',
                                 'link': 'http://inf-server.inf.uth.gr/courses/CE120/',
                             }
                         }
@@ -24,7 +24,7 @@ courses_data['ce121'] = { 'code': 'ce121',
                                 'last_updated': u''
                             },
                             'info': {
-                                'name': 'Προγραμμτισμός ΙI',
+                                'name': 'Προγραμματισμός ΙI',
                                 'link': 'http://inf-server.inf.uth.gr/courses/CE121/',
                             }
                         }
