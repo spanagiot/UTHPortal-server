@@ -426,7 +426,11 @@ def announcements_general(bsoup):
         #add to announcements
         announcements.append( announcement )
 
+
     return announcements
+
+
+
 
 def announcements_graduates():
     """
@@ -435,7 +439,7 @@ def announcements_graduates():
     """
     pass
 
-def test_announcements():
+def update_announcements():
     link = 'http://www.inf.uth.gr/cced/?cat=24'
 
     html = fetch_html(link)
@@ -443,7 +447,11 @@ def test_announcements():
 
     ann_list = announcements_general(bsoup)
 
-    print ann_list[0]['title']
+    find_query = { 'name' : 'announcements_general' }
+    update_query = { '$set' : { 'announcements' : ann_list } }
+
+    db.inf.announcements.update(find_query, update_query, upsert=True)
+
 
 ### testing code
 def test_fetch_course_links():
