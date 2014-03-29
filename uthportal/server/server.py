@@ -35,7 +35,14 @@ app.json_encoder = BSONEncoderEx
 @app.route('/inf/courses/all')
 def show_courses():
     db_courses = client.uthportal.inf.courses.find()
-    courses = { doc['code']:doc for doc in db_courses }
+
+    courses = [ ]
+    for doc in db_courses:
+        del doc['announcements']
+        del doc['_id']
+        courses.append(doc)
+
+    courses = { doc['code']:doc for doc in courses }
     return flask.jsonify(courses)
 
 
