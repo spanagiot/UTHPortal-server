@@ -1,6 +1,5 @@
-Flask
-pymongo
-gevent
-requests
-beautifulsoup4
-feedparser
+Flask>=0.10.1
+beautifulsoup4>=4.3.2
+gevent>=1.0
+pymongo>=2.6.3
+requests>=2.2.1
