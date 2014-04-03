@@ -67,7 +67,7 @@ MONGO_DB_URI = 'mongodb://localhost:27017/'
 client = None
 db = None
 
-sched = Scheduler(standalone=True, misfire_grace_time=5)
+sched = Scheduler(standalone=True)
 ##############################################################
 
 def health_check():
@@ -107,15 +107,15 @@ def main():
 
     logger.debug('Initializing succeed!')
 
-    sched.add_interval_job( fetch_food_menu, seconds=60 )
-    sched.add_interval_job( fetch_general_announcements, seconds=10 )
+    sched.add_interval_job( fetch_food_menu, minutes=60 )
+    sched.add_interval_job( fetch_general_announcements, minutes=10 )
 
     try:
         sched.start()
     except (KeyboardInterrupt):
         logger.debug('Terminating...')
 
-@sched.interval_schedule(seconds=10, start_date=datetime.now())
+@sched.interval_schedule(minutes=10)
 def fetch_courses(n_workers=1, timeout_secs=10, n_tries=3):
     """
     """
