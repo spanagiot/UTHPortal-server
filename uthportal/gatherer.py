@@ -17,14 +17,15 @@ import sys
 import logging
 import logging.config
 from time import sleep
-from Queue import PriorityQueue
 
 from library.util import fetch_html, get_bsoup
-from library.inf import update_course, update_announcements
+from library.inf import update_course, fetch_general_announcements
 from library.food import fetch_food_menu
 
 from pymongo import MongoClient
 from datetime import datetime
+
+from apscheduler.scheduler import Scheduler
 
 # Initialize logging ##############################################
 LOGGING_FILE_PATH = 'logging.conf'
@@ -52,38 +53,17 @@ except Exception as ex:
     print ex
     sys.exit(1)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 ################################################################
 
 MONGO_DB_URI = 'mongodb://localhost:27017/'
 
-PRIORITY_LOW = 3
-PRIORITY_MEDIUM = 2
-PRIORITY_HIGH = 1
-
-SLEEP_INTERVAL = 2
-
 client = None
 db = None
 
-"""
-class QueueItem():
-    def __init__(self, function, datetime, priority, *args, **kargs):
-        self.priority = priority
-        self.function = function
-        self.datetime = datetime
-        self.args = args
-        self.kargs = kargs
-
-    def __cmp__(self, other):
-        if self.datetime != other.datetime:
-            return cmp(self.datetime, other.datetime)
-        return cmp(self.priority, other.priority)
-
-    def run(self):
-        return self.function(self.args, self.kargs)
-"""
+sched = Scheduler(standalone=True, misfire_grace_time=5)
+###############################################################
 
 
 def health_check():
@@ -98,43 +78,6 @@ def health_check():
         return False
 
     return True
-
-def main():
-    if not health_check():
-        logger.error('Health check FAILED! Terminating...')
-        sys.exit(1)
-
-    init_db()
-
-    logger.debug('Initializing succeed!')
-
-
-    fetch_food_menu()
-    update_announcements()
-
-    courses_codes = [ course['code'] for course in db.inf.courses.find() ]
-
-    # Queue the jobs
-    for code in courses_codes:
-        db.queue.insert( {'code':code} )
-
-    while True:
-        # Get all the jobs from the queue
-        jobs = db.queue.find()
-        logger.debug('Got %d jobs!' % jobs.count())
-
-        if jobs.count() == 0:
-            sleep(SLEEP_INTERVAL)
-            continue
-
-        # Pop the next jobs (TODO: group jobs)
-        next_jobs = list()
-        for job in jobs:
-            next_jobs.append(job['code'])
-            db.queue.remove(job)
-
-        # Fetch the course
-        fetch_courses(next_jobs)
 
 def init_db():
     from data import courses_data
@@ -151,14 +94,31 @@ def init_db():
             db['inf.courses'].insert(courses_data[course])
 
 
-def fetch_course(code, *args, **kargs):
-    fetch_courses( [ code ], *args, **kargs)
+def main():
+    if not health_check():
+        logger.error('Health check FAILED! Terminating...')
+        sys.exit(1)
 
+    init_db()
 
-def fetch_courses(codes, n_workers=1, timeout_secs=10, n_tries=3):
+    logger.debug('Initializing succeed!')
+
+    sched.add_interval_job( fetch_food_menu, seconds=60 )
+    sched.add_interval_job( fetch_general_announcements, seconds=10 )
+
+    try:
+        sched.start()
+    except (KeyboardInterrupt):
+        logger.debug('Terminating...')
+
+@sched.interval_schedule(seconds=10, start_date=datetime.now())
+def fetch_courses(n_workers=1, timeout_secs=10, n_tries=3):
     """
     """
+    logger.debug('Now will fetch courses');
+    codes = [ course['code'] for course in db.inf.courses.find() ]
 
+    logger.debug(codes)
     # Initialize a pool of 'n_workers' greenlets
     n_workers = len(codes)
     worker_pool = Pool(n_workers)
@@ -170,39 +130,10 @@ def fetch_courses(codes, n_workers=1, timeout_secs=10, n_tries=3):
 
     worker_pool.join()
 
+def fetch_course(code, *args, **kargs):
+    fetch_courses( [ code ], *args, **kargs)
+
 
 if __name__ == '__main__':
     main()
 
-# Spawn workers till there are no more tasks
-#while ( not task_queue.empty() ):
-#    gevent.sleep(0.1)
-#
-#    # Find the best number of workers to spawn
-#    n_spawns = min( task_queue.qsize(), worker_pool.free_count() )
-#
-#    # Spawn 'n_spawns' workers
-#    for i in xrange(0, n_spawns):
-#        worker_pool.spawn( update_course(, timeout_secs, n_tries)
-
-# Wait for all the workers to finish
-"""
-
-#def fetch_course(course_name, timeout_secs=10, n_tries=3):
-#    fetch_courses(course_name,
-
-
-
-
-# define a testbench function and run it if the module is run directly
-if __name__ == '__main__':
-    def testbench():
-        data = fetch_courses(1, 10, 3)
-
-        #print(data['ce120'][-13][0].date())
-        ##print(data['ce120'][-13][1])
-        #print(data['ce232'][-5][0].date())
-        #print(data['ce232'][-5][1])
-
-    testbench()
-"""
