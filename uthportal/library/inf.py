@@ -15,12 +15,11 @@ from datetime import datetime
 from util import fetch_html, get_bsoup
 from pymongo import MongoClient
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 client = MongoClient()
 # Get the database
 db = client.uthportal
-
 
 ### info.py ###################################################################
 
@@ -294,22 +293,22 @@ def update_course(code, timeout_secs, n_tries):
         records = db.inf.courses.find(query)
 
         if records.count() is 0:
-            logger.error('No entry found for "%s"' % code)
+            logger.error('[%s] No entry found' % code)
             return False
 
         if records.count() > 1:
-            logger.warning('Multiple entries found for "%s"' % code)
+            logger.warning('[%s] Multiple entries found' % code)
 
         link = records[0]['announcements']['link']
         if link is None:
-            logger.warning('Course "%s" does not have "link" field' % code)
+            logger.warning('[%s] Course does not have "link" field' % code)
             return False
 
     except Exception as ex:
         logger.warning(ex)
         return False
 
-    logger.debug('Fetching course %s' % code)
+    logger.debug('[%s] Fetching course' % code)
     # Try to fetch_html 'n_tries'
     for i in xrange(n_tries):
         html = fetch_html(link, timeout=timeout_secs)
@@ -319,7 +318,7 @@ def update_course(code, timeout_secs, n_tries):
         elif i is n_tries - 1:
             return False
 
-    logger.debug('Getting BeautifulSoup object')
+    logger.debug('[%s] Getting BeautifulSoup object' % code)
     # Get BeautifulSoup Object
     try:
         bsoup = get_bsoup(html)
@@ -329,7 +328,7 @@ def update_course(code, timeout_secs, n_tries):
         logger.warning(ex)
         return False
 
-    logger.debug('Trying to parse...')
+    logger.debug('[%s] Trying to parse...' % code)
     # Parse the html and return the data
     try:
         parser = globals()[code]
@@ -338,7 +337,7 @@ def update_course(code, timeout_secs, n_tries):
         logger.warning(ex)
         return False
 
-    logger.debug('Updating database...')
+    logger.debug('[%s] Updating database...' % code)
 
     # If data are valid update the db
     if data is not None:
@@ -352,7 +351,7 @@ def update_course(code, timeout_secs, n_tries):
             logger.warning(ex)
             return False
 
-    logger.debug('Successfull run!')
+    logger.debug('[%s] Successfull run!' % code)
     return True
 
 ### /announcements.py #########################################################
@@ -439,7 +438,7 @@ def announcements_graduates():
     """
     pass
 
-def update_announcements():
+def fetch_general_announcements():
     link = 'http://www.inf.uth.gr/cced/?cat=24'
 
     html = fetch_html(link)
