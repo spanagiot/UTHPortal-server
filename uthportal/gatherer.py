@@ -7,7 +7,6 @@
 # Get proper link for courses
 # Logging and testing
 
-# import gevent.monkey and apply the patch for async operations
 import gevent.monkey
 gevent.monkey.patch_all()
 from gevent.queue import Queue
@@ -17,15 +16,6 @@ import sys
 import logging
 import logging.config
 from time import sleep
-
-from library.util import fetch_html, get_bsoup
-from library.inf import update_course, fetch_general_announcements
-from library.food import fetch_food_menu
-
-from pymongo import MongoClient
-from datetime import datetime
-
-from apscheduler.scheduler import Scheduler
 
 # Initialize logging ##############################################
 LOGGING_FILE_PATH = 'logging.conf'
@@ -53,18 +43,32 @@ except Exception as ex:
     print ex
     sys.exit(1)
 
-logger = logging.getLogger()
+inactive_loggers = { 'requests', 'apscheduler', 'urllib3' }
+for log in inactive_loggers:
+    _logger = logging.getLogger(log)
+    _logger.setLevel(logging.ERROR)
+
+logger = logging.getLogger(__name__)
 
 ################################################################
 
+from library.food import fetch_food_menu
+from library.inf import fetch_general_announcements, update_course
+from library.util import fetch_html, get_bsoup
+
+from pymongo import MongoClient
+from datetime import datetime
+
+from apscheduler.scheduler import Scheduler
+
+##############################################################
 MONGO_DB_URI = 'mongodb://localhost:27017/'
 
 client = None
 db = None
 
 sched = Scheduler(standalone=True, misfire_grace_time=5)
-###############################################################
-
+##############################################################
 
 def health_check():
     from pymongo.errors import ConnectionFailure
@@ -118,7 +122,6 @@ def fetch_courses(n_workers=1, timeout_secs=10, n_tries=3):
     logger.debug('Now will fetch courses');
     codes = [ course['code'] for course in db.inf.courses.find() ]
 
-    logger.debug(codes)
     # Initialize a pool of 'n_workers' greenlets
     n_workers = len(codes)
     worker_pool = Pool(n_workers)
