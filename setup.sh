@@ -34,6 +34,9 @@ while true; do
     read -e -p "do you want to install the required Python modules? (y/n): " REQUIREMENTS_ANSWER
     case $REQUIREMENTS_ANSWER in
         [Yy]*)
+            # TODO
+            # make compatible with virtual environments (don't use sudo inside one)
+            # http://stackoverflow.com/questions/14695278/python-packages-not-installing-in-virtualenv-using-pip
             sudo pip install -r requirements.txt
             break
             ;;
