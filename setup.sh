@@ -25,19 +25,27 @@ if ! command -v pip &> /dev/null; then
 fi
 
 # install dependencies of gevent
-# TODO
-# check whether the packages are already installed
-sudo apt-get install build-essential python-dev
+if ! dpkg --get-selections | grep build-essential &> /dev/null; then
+    sudo apt-get install build-essential
+fi
+if ! dpkg --get-selections | grep python-dev &> /dev/null; then
+    sudo apt-get install python-dev
+fi
 
 # option to install required modules
 while true; do
     read -e -p "do you want to install the required Python modules? (y/n): " REQUIREMENTS_ANSWER
     case $REQUIREMENTS_ANSWER in
         [Yy]*)
-            # TODO
-            # make compatible with virtual environments (don't use sudo inside one)
-            # http://stackoverflow.com/questions/14695278/python-packages-not-installing-in-virtualenv-using-pip
-            sudo pip install -r requirements.txt
+            # run pip without sudo inside a virtual environment
+            # http://stackoverflow.com/questions/15454174/how-can-a-shell-function-know-if-it-is-running-within-a-virtualenv
+            python -c 'import sys; print sys.real_prefix' &> /dev/null && IN_VIRTUAL_ENVIRONMENT=true || IN_VIRTUAL_ENVIRONMENT=false
+            # http://stackoverflow.com/questions/2953646/how-to-declare-and-use-boolean-variables-in-shell-script
+            if [ "$IN_VIRTUAL_ENVIRONMENT" == true ]; then
+                pip install -r requirements.txt
+            else
+                sudo pip install -r requirements.txt
+            fi
             break
             ;;
         [Nn]*)
@@ -60,28 +68,24 @@ install_mongodb() {
 
     echo "installing MongoDB"
 
-    ### Configure Package Management System (APT)
-    # Import MongoDB PGP key.
+    # Import the public key used by the package management system.
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
-    # Create a sources.list file for MongoDB.
+    # Create a /etc/apt/sources.list.d/mongodb.list file for MongoDB.
     echo 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
     # Reload local package database.
     sudo apt-get update
-
-    ### Install Packages
-    sudo apt-get install mongodb-10gen
+    # Install the MongoDB packages.
+    sudo apt-get install mongodb-org
 
     echo "MongoDB successfully installed"
 }
 
 # check whether MongoDB is already installed
 # http://askubuntu.com/questions/17823/how-to-list-all-installed-packages
-# TODO
-# simplify the installation check
+# NOTE
+# this test works for now, but it could lead to false positives
 if ! dpkg --get-selections | grep mongodb &> /dev/null; then
-    if ! command -v mongo &> /dev/null; then
-        install_mongodb
-    fi
+    install_mongodb
 fi
 
 ### /MongoDB ##################################################################
