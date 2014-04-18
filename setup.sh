@@ -82,9 +82,7 @@ install_mongodb() {
 
 # check whether MongoDB is already installed
 # http://askubuntu.com/questions/17823/how-to-list-all-installed-packages
-# NOTE
-# this test works for now, but it could lead to false positives
-if ! dpkg --get-selections | grep mongodb &> /dev/null; then
+if ! command -v mongo &> /dev/null; then
     install_mongodb
 fi
 
