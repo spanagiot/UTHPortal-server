@@ -7,6 +7,7 @@
 # Get proper link for courses
 # Logging and testing
 
+
 import gevent.monkey
 gevent.monkey.patch_all()
 from gevent.queue import Queue
@@ -16,6 +17,7 @@ import sys
 import logging
 import logging.config
 from time import sleep
+
 
 # Initialize logging ##############################################
 LOGGING_FILE_PATH = 'logging.conf'
@@ -52,14 +54,16 @@ logger = logging.getLogger(__name__)
 
 ################################################################
 
+
 from library.food import fetch_food_menu
 from library.inf import fetch_general_announcements, update_course
 from library.util import fetch_html, get_bsoup
 
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from apscheduler.scheduler import Scheduler
+
 
 ##############################################################
 MONGO_DB_URI = 'mongodb://localhost:27017/'
@@ -69,6 +73,7 @@ db = None
 
 sched = Scheduler(standalone=True)
 ##############################################################
+
 
 def health_check():
     from pymongo.errors import ConnectionFailure
@@ -83,10 +88,11 @@ def health_check():
 
     return True
 
+
 def init_db():
     from data import courses_data
 
-    # TODO: Check if db exists(else create), collections, documtents etc
+    # TODO: Check if db exists(else create), collections, documents, etc
 
     for course in courses_data:
         find_query = { 'code' : course }
@@ -97,15 +103,24 @@ def init_db():
         else:
             db['inf.courses'].insert(courses_data[course])
 
+def init():
+    """
+    """
+    init_db()
+
+    # http://stackoverflow.com/questions/100210/python-easy-way-to-add-n-seconds-to-a-datetime-time
+    sched.add_date_job( fetch_food_menu, datetime.now() + timedelta(minutes=1) )
+    sched.add_date_job( fetch_general_announcements, datetime.now() + timedelta(minutes=1) )
+
+    logger.debug('Initialization successful!')
+
 
 def main():
     if not health_check():
         logger.error('Health check FAILED! Terminating...')
         sys.exit(1)
 
-    init_db()
-
-    logger.debug('Initializing succeed!')
+    init()
 
     sched.add_interval_job( fetch_food_menu, minutes=60 )
     sched.add_interval_job( fetch_general_announcements, minutes=10 )
@@ -115,11 +130,12 @@ def main():
     except (KeyboardInterrupt):
         logger.debug('Terminating...')
 
+
 @sched.interval_schedule(minutes=10)
 def fetch_courses(n_workers=1, timeout_secs=10, n_tries=3):
     """
     """
-    logger.debug('Now will fetch courses');
+    logger.debug('Will now fetch the courses');
     codes = [ course['code'] for course in db.inf.courses.find() ]
 
     # Initialize a pool of 'n_workers' greenlets
@@ -133,10 +149,10 @@ def fetch_courses(n_workers=1, timeout_secs=10, n_tries=3):
 
     worker_pool.join()
 
+
 def fetch_course(code, *args, **kargs):
     fetch_courses( [ code ], *args, **kargs)
 
 
 if __name__ == '__main__':
     main()
-

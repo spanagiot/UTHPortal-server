@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>UTHPortal JSON server</title>
+</head>
+
+<body>
+    <h1>UTHPortal JSON server</h1>
+    <h2><a href="/uth/food-menu">university restaurant menu</a></li></h2>
+    <h2><a href="/inf/announcements">inf.uth.gr announcements</a></li></h2>
+    <h2><a href="/inf/courses/all">inf.uth.gr courses</a></li></h2>
+    <ul>
+        {% for key, value in courses.iteritems() %}
+            <li><a href="/inf/courses/{{key}}">{{key}} {{value}}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

@@ -30,6 +30,8 @@ Python modules
 
 **[Universal Feed Parser](https://pythonhosted.org/feedparser/)**: Atom and RSS feed parser
 
+**[APScheduler](https://pythonhosted.org/APScheduler/)**: task scheduler
+
 development
 ---
 Clone or download the repository and run the setup script to setup a development environment for the UTHPortal server.

@@ -460,6 +460,7 @@ def fetch_general_announcements():
 
 
 ### testing code
+
 def test_fetch_course_links():
     """
     """
@@ -473,6 +474,8 @@ def test_fetch_course_links():
         if isinstance(info, dict):
             print(info['name'] + ':' +
                     info['link'])
+
+### /testing code
 
 
 if __name__ == '__main__':

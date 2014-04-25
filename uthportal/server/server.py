@@ -18,6 +18,7 @@ HTTPCODE_NOT_FOUND = 404
 HTTPCODE_NOT_IMPLEMENTED = 501
 
 client = MongoClient()
+db = client.uthportal
 
 # Overide class for JSONEncoder
 class BSONEncoderEx(JSONEncoder):
@@ -36,7 +37,7 @@ app.json_encoder = BSONEncoderEx
 
 @app.route('/inf/courses/all')
 def show_courses():
-    db_courses = client.uthportal.inf.courses.find()
+    db_courses = db.inf.courses.find()
 
     # Remove not needed keys #
     courses = [ ]
@@ -51,7 +52,7 @@ def show_courses():
 
 @app.route('/inf/courses/<course_name>')
 def show_course(course_name):
-    db_doc = client.uthportal.inf.courses.find_one({'code':course_name })
+    db_doc = db.inf.courses.find_one({'code':course_name })
 
     for (i, item) in enumerate(db_doc['announcements']['site']):
         db_doc['announcements']['site'][i]['plaintext'] = BeautifulSoup(item['html']).text
@@ -63,7 +64,7 @@ def show_course(course_name):
 
 @app.route('/inf/announcements')
 def show_announcements():
-    db_doc = client.uthportal.inf.announcements.find_one()
+    db_doc = db.inf.announcements.find_one()
 
     #for(i, item) in enumerate(db_doc['announcements']):
      #   db_doc['announcements'][i]['plaintext'] = BeautifulSoup(item['html']).text
@@ -75,11 +76,30 @@ def show_announcements():
 
 @app.route('/uth/food-menu')
 def show_food_menu():
-    db_doc = client.uthportal.uth.food_menu.find_one({'name':'food_menu'})
+    db_doc = db.uth.food_menu.find_one({'name':'food_menu'})
     if isinstance(db_doc, dict):
         return flask.jsonify(db_doc)
     else:
         flask.abort(HTTPCODE_NOT_IMPLEMENTED)
+
+
+# http://forums.udacity.com/questions/6009973/how-to-use-the-jinja2-template-engine-with-appengine
+import os
+import jinja2
+
+jinja_environment = jinja2.Environment(autoescape=True,
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
+
+@app.route('/')
+def index():
+    courses = {}
+
+    for course in db.inf.courses.find():
+        courses[ course['code'] ] = course['info']['name']
+
+    template = jinja_environment.get_template('index.html')
+    return template.render( courses=courses )
+
 
 def json_error(code, message):
     return flask.jsonify( {'error': {'code': code, 'message': message} } ), code

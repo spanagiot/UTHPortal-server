@@ -11,3 +11,6 @@
 
 # html files
 *.html
+
+# doc files
+*.doc

@@ -13,6 +13,9 @@ fi
 
 ### Python and modules ########################################################
 
+# TODO
+# install and run in a virtual environment by default
+
 # install Python 2.7
 if ! command -v python2.7 &> /dev/null; then
     echo "installing Python 2.7"
@@ -25,6 +28,7 @@ if ! command -v pip &> /dev/null; then
 fi
 
 # install dependencies of gevent
+# http://askubuntu.com/questions/17823/how-to-list-all-installed-packages
 if ! dpkg --get-selections | grep build-essential &> /dev/null; then
     sudo apt-get install build-essential
 fi
@@ -81,7 +85,6 @@ install_mongodb() {
 }
 
 # check whether MongoDB is already installed
-# http://askubuntu.com/questions/17823/how-to-list-all-installed-packages
 if ! command -v mongo &> /dev/null; then
     install_mongodb
 fi

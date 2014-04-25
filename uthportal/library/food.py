@@ -17,9 +17,9 @@ from datetime import datetime, timedelta
 
 weekdays = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
 link = 'http://uth.gr/static/miscdocs/merimna/'
-folder_name = 'food-menu/'
+dir_name = 'food_menu/'
 
-def _convert_to_html(doc_filepath, htm_filepath):
+def _convert_to_html(doc_path, html_path):
     """
     Uses soffice library ( used by LibreOffice & OpenOffice ) to convert
     the .doc file to the according .html one.
@@ -29,10 +29,10 @@ def _convert_to_html(doc_filepath, htm_filepath):
     """
 
     # set the arguments and make the call
-    soffice_args = ['soffice', '--headless', '--convert-to', 'htm:HTML', '--outdir', folder_name, doc_filepath ]
+    soffice_args = ['soffice', '--headless', '--convert-to', 'html:HTML', '--outdir', dir_name, doc_path ]
     ret_code = call(soffice_args)
 
-    if ret_code is 0 and path.exists(htm_filepath):
+    if ret_code is 0 and path.exists(html_path):
         return True
     else:
         return False
@@ -152,24 +152,24 @@ def fetch_food_menu( date=datetime.today() ):
 
     # filename format: 'menusitisis_YYYYMMDD'
     filename = 'menusitisis_%d%02d%02d' % (monday.year, monday.month, monday.day)
-    doc_filepath = folder_name + filename + '.doc'
-    htm_filepath = folder_name + filename + '.htm'
+    doc_path = dir_name + filename + '.doc'
+    html_path = dir_name + filename + '.html'
 
     # create the folder path, if necessary
-    if not path.exists(folder_name):
-        makedirs(folder_name)
+    if not path.exists(dir_name):
+        makedirs(dir_name)
 
     # download the doc file
-    download_file(link + filename + '.doc', doc_filepath)
+    download_file(link + filename + '.doc', doc_path)
 
-    if not path.exists(doc_filepath):
+    if not path.exists(doc_path):
         return None
 
-    if not _convert_to_html(doc_filepath, htm_filepath):
+    if not _convert_to_html(doc_path, html_path):
         return None
 
     # reads the html code from disk
-    file_html = open(htm_filepath, 'r')
+    file_html = open(html_path, 'r')
     html = file_html.read()
     file_html.close()
 
