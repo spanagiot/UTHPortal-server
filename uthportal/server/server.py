@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from json import JSONEncoder
 
 from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
 
 app = flask.Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -76,7 +77,10 @@ def show_announcements():
 
 @app.route('/uth/food-menu')
 def show_food_menu():
-    db_doc = db.uth.food_menu.find_one({'name':'food_menu'})
+    _monday = (datetime.now() - timedelta(datetime.now().weekday())).date()
+    last_monday = datetime.combine(_monday, datetime.min.time() )
+
+    db_doc = db.uth.food_menu.find_one({'date':last_monday })
     if isinstance(db_doc, dict):
         return flask.jsonify(db_doc)
     else:
@@ -99,7 +103,6 @@ def index():
 
     template = jinja_environment.get_template('index.html')
     return template.render( courses=courses )
-
 
 def json_error(code, message):
     return flask.jsonify( {'error': {'code': code, 'message': message} } ), code

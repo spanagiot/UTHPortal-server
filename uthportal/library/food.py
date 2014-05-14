@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# TODO:
-# Exception handling
-# Logging actions for debugging purpuses
-
 import requests
+import logging
 from bs4 import BeautifulSoup
 from util import download_file
 from pymongo import MongoClient
@@ -14,6 +11,8 @@ from pymongo.errors import OperationFailure
 from os import path,makedirs
 from subprocess import call
 from datetime import datetime, timedelta
+
+logger = logging.getLogger(__name__)
 
 weekdays = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
 link = 'http://uth.gr/static/miscdocs/merimna/'
@@ -127,23 +126,18 @@ def _update_database(food_menu_dict, week):
     client = MongoClient()
     collection = client.uthportal.uth.food_menu
 
-    # Queries for the 'food_menu' document (latest)
-    find_query = { 'name' : 'food_menu' }
-    update_query = { '$set': { 'date': week, 'menu' : food_menu_dict } }
+    # Queries for the food_menu document in db
+    find_query = { 'date':week }
+    insert_query = { 'date':week, 'menu':food_menu_dict, 'last_updated':datetime.now() }
 
-    # Update if needed the 'food_menu' document
+    # Update the 'food_menu' document
+    pretty_date = '{:%d-%m-%y}'.format(week)
     document = collection.find_one(find_query)
     if not isinstance(document, dict):
-        collection.update( find_query, update_query, upsert=True)
-    elif document['date'] < week:
-        collection.update( find_query, update_query )
-
-    # Queries for the 'h_food_menu' (history)
-    h_find_query = { 'name' : 'h_food_menu' }
-    h_update_query = { '$set' : { week.isoformat() : { 'date' : week, 'menu' : food_menu_dict } } }
-
-    # Updates the history
-    collection.update(h_find_query, h_update_query, upsert=True)
+        logger.info('Adding new food-menu [%s]!' % pretty_date)
+        collection.insert(insert_query)
+    else:
+        logger.debug('Food-menu of [%s] already exists!' % pretty_date)
 
 
 def fetch_food_menu( date=datetime.today() ):
@@ -160,6 +154,7 @@ def fetch_food_menu( date=datetime.today() ):
         makedirs(dir_name)
 
     # download the doc file
+    logger.debug('Trying to fetch "%s"' % doc_path)
     download_file(link + filename + '.doc', doc_path)
 
     if not path.exists(doc_path):
@@ -173,28 +168,36 @@ def fetch_food_menu( date=datetime.today() ):
     html = file_html.read()
     file_html.close()
 
+    # Parse the html code #
+    logger.debug('Trying to parse...')
     try:
         food_menu = _parse_html(html)
         for i in xrange(7):
             date_ = monday + timedelta(days=i)
             food_menu[i]['date'] = _date_to_datetime(date_)
 
-    except Exception as exception:
-        print exception.message
+    except Exception as ex:
+        logger.error(ex)
         return None
 
+    # Update the database #
     try:
         _update_database(food_menu, monday)
-    except OperationFailure:
-        # TODO: Logging
-        pass
+    except OperationFailure as ex:
+        logger.error('DB Error: %s' % ex)
+        return None
+    except Exception as ex:
+        logger.error(ex)
+        return None
 
     return food_menu
 
 
 # testing code
 if __name__ == '__main__':
-    menu = fetch_food_menu(datetime.now() )
+    menu = fetch_food_menu(datetime.now())
+
+
     #menu = fetch_food_menu(datetime(year=2014, month=1, day=23))
 
     """
