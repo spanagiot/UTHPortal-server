@@ -325,7 +325,7 @@ def update_course(code, timeout_secs, n_tries):
         if bsoup is None:
             return False
     except Exception as ex:
-        logger.warning( ('[%s] ' % code) + ex )
+        logger.warning('[%s] %s' % (code, ex) )
         return False
 
     logger.debug('[%s] Trying to parse...' % code)
@@ -334,7 +334,7 @@ def update_course(code, timeout_secs, n_tries):
         parser = globals()[code]
         data = parser(bsoup)
     except Exception as ex:
-        logger.warning( ('[%s] ' % code) + ex )
+        logger.warning('[%s] %s' % (code, ex) )
         return False
 
     logger.debug('[%s] Updating database...' % code)
@@ -348,7 +348,7 @@ def update_course(code, timeout_secs, n_tries):
             db.inf.courses.update(query, site_update_query)
             db.inf.courses.update(query, date_update_query)
         except Exception as ex:
-            logger.warning( ('[%s] ' % code) + ex )
+            logger.warning('[%s] %s' % (code, ex) )
             return False
 
     logger.debug('[%s] Successfull run!' % code)
@@ -448,7 +448,7 @@ def fetch_general_announcements():
             return
 
     except Exception as ex:
-        logger.warning('[GEN-ANN] ' + ex)
+        logger.warning('[GEN-ANN] %s' % ex)
         return
 
     bsoup = get_bsoup(html)
@@ -458,7 +458,7 @@ def fetch_general_announcements():
     try:
         ann_list = announcements_general(bsoup)
     except Exception as ex:
-        logger.warning('[GEN-ANN] ' + ex)
+        logger.warning('[GEN-ANN] %s' % ex)
         return
 
     # Create the dictionary
@@ -474,7 +474,7 @@ def fetch_general_announcements():
     try:
         db.inf.announcements.update(find_query, update_query, upsert=True)
     except Exception as ex:
-        logger.error('[GEN-ANN] ' + ex)
+        logger.error('[GEN-ANN] %s' % ex)
 
 
 ### testing code
