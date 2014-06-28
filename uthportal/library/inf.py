@@ -305,7 +305,7 @@ def update_course(code, timeout_secs, n_tries):
             return False
 
     except Exception as ex:
-        logger.warning(ex)
+        logger.warning( ('[%s] ' % code) + ex )
         return False
 
     logger.debug('[%s] Fetching course' % code)
@@ -325,7 +325,7 @@ def update_course(code, timeout_secs, n_tries):
         if bsoup is None:
             return False
     except Exception as ex:
-        logger.warning(ex)
+        logger.warning( ('[%s] ' % code) + ex )
         return False
 
     logger.debug('[%s] Trying to parse...' % code)
@@ -334,7 +334,7 @@ def update_course(code, timeout_secs, n_tries):
         parser = globals()[code]
         data = parser(bsoup)
     except Exception as ex:
-        logger.warning(ex)
+        logger.warning( ('[%s] ' % code) + ex )
         return False
 
     logger.debug('[%s] Updating database...' % code)
@@ -348,7 +348,7 @@ def update_course(code, timeout_secs, n_tries):
             db.inf.courses.update(query, site_update_query)
             db.inf.courses.update(query, date_update_query)
         except Exception as ex:
-            logger.warning(ex)
+            logger.warning( ('[%s] ' % code) + ex )
             return False
 
     logger.debug('[%s] Successfull run!' % code)
@@ -441,10 +441,25 @@ def announcements_graduates():
 def fetch_general_announcements():
     link = 'http://www.inf.uth.gr/cced/?cat=24'
 
-    html = fetch_html(link)
-    bsoup = get_bsoup(html)
+    try:
+        html = fetch_html(link)
+        if html is None:
+            logger.warning('[GEN-ANN] Empty HTML')
+            return
 
-    ann_list = announcements_general(bsoup)
+    except Exception as ex:
+        logger.warning('[GEN-ANN] ' + ex)
+        return
+
+    bsoup = get_bsoup(html)
+    if bsoup is None:
+        return
+
+    try:
+        ann_list = announcements_general(bsoup)
+    except Exception as ex:
+        logger.warning('[GEN-ANN] ' + ex)
+        return
 
     # Create the dictionary
     db_doc = { }
@@ -456,7 +471,10 @@ def fetch_general_announcements():
     find_query = { 'name' : 'announcements_general' }
     update_query = { '$set' : db_doc }
 
-    db.inf.announcements.update(find_query, update_query, upsert=True)
+    try:
+        db.inf.announcements.update(find_query, update_query, upsert=True)
+    except Exception as ex:
+        logger.error('[GEN-ANN] ' + ex)
 
 
 ### testing code
