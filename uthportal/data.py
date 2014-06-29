@@ -8,7 +8,7 @@ courses_data = { }
 courses_data['ce120'] = {
     'code': 'ce120',
     'announcements': {
-        'link':'http://inf-server.inf.uth.gr/courses/CE120/',
+        'link': 'http://inf-server.inf.uth.gr/courses/CE120/',
         'site': [ ],
         'emails': [ ],
         'last_updated': u''
@@ -18,7 +18,6 @@ courses_data['ce120'] = {
         'link': 'http://inf-server.inf.uth.gr/courses/CE120/',
     }
 }
-
 
 courses_data['ce121'] = {
     'code': 'ce121',
@@ -34,6 +33,33 @@ courses_data['ce121'] = {
     }
 }
 
+courses_data['ce213'] = {
+    'code': 'ce213',
+    'announcements': {
+        'link':'http://inf-server.inf.uth.gr/courses/CE213/news.html',
+        'site': [ ],
+        'emails': [ ],
+        'last_updated': u''
+    },
+    'info': {
+        'name': 'Αριθμητική Ανάλυση',
+        'link': 'http://inf-server.inf.uth.gr/courses/CE213/',
+    }
+}
+
+courses_data['ce230'] = {
+    'code': 'ce230',
+    'announcements': {
+        'link':'http://inf-server.inf.uth.gr/courses/CE230/',
+        'site': [ ],
+        'emails': [ ],
+        'last_updated': u''
+    },
+    'info': {
+        'name': 'Ανάλυση Κυκλωμάτων',
+        'link': 'http://inf-server.inf.uth.gr/courses/CE230/'
+    }
+}
 
 courses_data['ce232'] = {
     'code': 'ce232',
@@ -49,6 +75,33 @@ courses_data['ce232'] = {
     }
 }
 
+courses_data['ce321'] = {
+    'code': 'ce321',
+    'announcements': {
+        'link':'http://inf-server.inf.uth.gr/courses/CE321/',
+        'site': [ ],
+        'emails': [ ],
+        'last_updated': u''
+    },
+    'info': {
+        'name': 'Λειτουργικά Συστήματα',
+        'link': 'http://inf-server.inf.uth.gr/courses/CE321/',
+    }
+}
+
+courses_data['ce420'] = {
+    'code': 'ce420',
+    'announcements': {
+        'link':'http://inf-server.inf.uth.gr/courses/CE420/',
+        'site': [ ],
+        'emails': [ ],
+        'last_updated': u''
+    },
+    'info': {
+        'name': 'Σχεδίαση και Ανάπτυξη Λογισμικού',
+        'link': 'http://inf-server.inf.uth.gr/courses/CE420/',
+    }
+}
 
 courses_data['ce431'] = {
     'code': 'ce431',
@@ -95,31 +148,3 @@ courses_data['ce538'] = {
 }
 
 
-courses_data['ce230'] = {
-    'code': 'ce230',
-    'announcements': {
-        'link':'http://inf-server.inf.uth.gr/courses/CE230/',
-        'site': [ ],
-        'emails': [ ],
-        'last_updated': u''
-    },
-    'info': {
-        'name': 'Ανάλυση Κυκλωμάτων',
-        'link': 'http://inf-server.inf.uth.gr/courses/CE230/'
-    }
-}
-
-
-courses_data['ce420'] = {
-    'code': 'ce420',
-    'announcements': {
-        'link':'http://inf-server.inf.uth.gr/courses/CE420/',
-        'site': [ ],
-        'emails': [ ],
-        'last_updated': u''
-    },
-    'info': {
-        'name': 'Σχεδίαση και Ανάπτυξη Λογισμικού',
-        'link': 'http://inf-server.inf.uth.gr/courses/CE420/',
-    }
-}
