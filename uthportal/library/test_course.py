@@ -63,6 +63,7 @@ if __name__ == '__main__':
             print '[%s] %s' % (code, ex)
             return False
 
+        print '[%s] Parsed data: ' % code
         # Print the data
         for item in data:
             for key in item:
