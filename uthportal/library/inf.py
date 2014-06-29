@@ -179,8 +179,8 @@ def ce121(bsoup):
         htmls[i] = html
 
     # Create the final list
-    announce_list = [ {'title':element.span.extract().text.encode('utf8'), \
-                        'date': element.text.encode('utf8'), 'has_time': False, \
+    announce_list = [ {'title': element.span.extract().text.encode('utf8'), \
+                        'date': datetime.strptime(element.text.strip(), '%d/%m/%Y'), 'has_time': False, \
                         'html': htmls[i].encode('utf8').strip() } for (i, element) in enumerate(dates_titles) ]
 
 
@@ -216,7 +216,7 @@ def ce213(bsoup):
     dates = [ datetime.strptime(date.text.strip(' .'), '%d/%m/%Y') \
                 for date in dates ]
 
-    return [ { 'date':date, 'html': html, 'has_time': False } \
+    return [ { 'date':date, 'html': html.encode('utf8'), 'has_time': False } \
             for (date, html) in zip(dates, htmls) ]
 
 
