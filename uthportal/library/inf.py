@@ -142,48 +142,49 @@ def ce121(bsoup):
     course 121: Προγραμματισμος ΙΙ
 
     HTML Format:
-        <h3>Ανακοινώσεις</h3>
-        <ul>
-            <li><b>date1 <span ... > title1 </b>
-            announce1
-            </li>
-            <li><b>date2 <span ... > title2 </b>
-            announce2
-            </li>
-            ....
-        </ul>
+
+    <a id="announce"></a>
+    <h3>Ανακοινωσεις</h3>
+    <ul class="nb">
+	    <li><b>date1 <span style="color:#C00000"> title1 </span> </b><br>
+	        <ul class="nb">
+ 		        <li> html1
+		        </li>
+	        </ul>
+	    </li>
+	    <li><b>date2 <span style="color:#C00000"> title2 </span> </b><br>
+	        <ul class="nb">
+ 		        <li> html2
+		        </li>
+	        </ul>
+	    </li>
+    </ul>
     """
     # Get the region of the announcements
-    announce_region = bsoup.find('h3',text=u'Ανακοινώσεις')
+    announce_region = bsoup.find('a', id='announce')
 
-    # Reach the 'ul' tag
-    while True:
-        if announce_region is not None and \
-            getattr(announce_region, 'name') is not None and \
-            announce_region.name == 'ul':
-                break
+    # Move to the ul tag
+    announce_region = announce_region.find_next_sibling()
+    announce_region = announce_region.find_next_sibling()
 
-        announce_region = announce_region.next_sibling()
+    # Find all b inside li (dates & titles)
+    dates_titles = announce_region.select('li > b')
 
-    # Parse the announcements
-    announce_list = []
-    for announce in announce_region.children:
-        if isinstance(announce, Tag):
-            # Parse the date
-            date_splitter = announce.text.find(' ')
-            date_string = announce.text[:date_splitter]
-            date = datetime.strptime(date_string, '%d/%m/%Y')
+    # Find all announcements html
+    htmls = announce_region.find_all('ul', class_='nb')
+    # Remove the ul 'outer' tag
+    for (i, html) in enumerate(htmls):
+        html = unicode(html).replace('<ul class="nb">', '')
+        html = unicode(html).replace('</ul>', '')
+        htmls[i] = html
 
-            # Remove the date part from announcement
-            html = unicode(announce)
-            date_position = html.find(date_string)
-            html = html[:date_position] + html[date_position + len(date_string):]
+    # Create the final list
+    announce_list = [ {'title':element.span.extract().text.encode('utf8'), \
+                        'date': element.text.encode('utf8'), 'has_time': False, \
+                        'html': htmls[i].encode('utf8').strip() } for (i, element) in enumerate(dates_titles) ]
 
-            #Add the announcement into the list
-            announce_list.append( {'date':date, 'html':html, 'has_time': False} )
 
     return announce_list
-
 
 def ce232(bsoup):
     """
@@ -305,7 +306,7 @@ def update_course(code, timeout_secs, n_tries):
             return False
 
     except Exception as ex:
-        logger.warning( ('[%s] ' % code) + ex )
+        logger.warning('[%s] %s' % (code, ex) )
         return False
 
     logger.debug('[%s] Fetching course' % code)
