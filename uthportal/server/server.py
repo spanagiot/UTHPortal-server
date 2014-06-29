@@ -14,6 +14,7 @@ app = flask.Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config['JSON_SORT_KEYS'] = True
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+app.debug = True
 
 HTTPCODE_NOT_FOUND = 404
 HTTPCODE_NOT_IMPLEMENTED = 501
@@ -116,4 +117,4 @@ def not_implemented(error):
     return json_error(HTTPCODE_NOT_IMPLEMENTED,'Not implemented')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='127.0.0.1', port=5000)

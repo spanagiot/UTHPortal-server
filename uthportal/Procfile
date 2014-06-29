@@ -1,0 +1,2 @@
+web: gunicorn -w 2 -k gevent server.server:app
+worker: python -m gatherer
