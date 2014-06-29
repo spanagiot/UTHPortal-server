@@ -186,6 +186,46 @@ def ce121(bsoup):
 
     return announce_list
 
+def ce134(bsoup):
+    return ce232(bsoup)
+
+def ce213(bsoup):
+    """
+    Course: HΥ213 Αριθμητική Ανάλυση
+
+    HTML Format:
+
+    <li>
+       <h3> <font color="#669933">date1. </font></h3>
+        <p> html1
+        </p>
+    </li>
+
+    <li>
+       <h3> <font color="#669933">date2. </font></h3>
+       <p> html2
+       </p>
+    </li>
+    ....
+    """
+    # Find all html announcement
+    htmls = bsoup.select('li h3 ~ p')
+
+    # Find all dates
+    dates = bsoup.select('li h3 > font')
+    dates = [ datetime.strptime(date.text.strip(' .'), '%d/%m/%Y') \
+                for date in dates ]
+
+    return [ { 'date':date, 'html': html, 'has_time': False } \
+            for (date, html) in zip(dates, htmls) ]
+
+
+def ce230(bsoup):
+    """
+    Course: ΗΥ230 Ανάλυση Κυκλωμάτων
+    """
+    return ce232(bsoup)
+
 def ce232(bsoup):
     """
     course: ΗΥ232 Οργάνωση και Σχεδίαση Ηλεκτρονικών Υπολογιστών
@@ -237,20 +277,6 @@ def ce232(bsoup):
     # return the date/content tuples
     return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
 
-def ce431(bsoup):
-    return ce232(bsoup)
-
-def ce536(bsoup):
-    dates = [datetime.strptime(date_element.text.strip(), '%d/%m/%Y') for date_element in bsoup.select('dt > b')]
-    contents = [ann_element.text.strip() for ann_element in bsoup.select('dt + dd')]
-    return [ {'date': date, 'html': html, 'has_time': False} for (date, html) in zip(dates, contents) ]
-
-def ce538(bsoup):
-    return ce232(bsoup)
-
-def ce230(bsoup):
-    return ce232(bsoup)
-
 def ce321(bsoup):
     """
     course: ce321 : Λειτουργικα Συστηματα
@@ -280,9 +306,29 @@ def ce321(bsoup):
     return announce_list
 
 def ce420(bsoup):
+    """
+    Course: HY420 Σχεδίαση και Ανάπτυξη Λογισμικού
+    """
     return ce120(bsoup)
 
-def ce134(bsoup):
+def ce431(bsoup):
+    """
+    Course: Αρχιτεκτονική Παράλληλων Συστημάτων
+    """
+    return ce232(bsoup)
+
+def ce536(bsoup):
+    """
+    Course: Εργαστήριο Αναλογικών Συστημάτων VLSI
+    """
+    dates = [datetime.strptime(date_element.text.strip(), '%d/%m/%Y') for date_element in bsoup.select('dt > b')]
+    contents = [ann_element.text.strip() for ann_element in bsoup.select('dt + dd')]
+    return [ {'date': date, 'html': html, 'has_time': False} for (date, html) in zip(dates, contents) ]
+
+def ce538(bsoup):
+    """
+    Course: Αρχιτεκτονική Παράλληλων Συστημάτων
+    """
     return ce232(bsoup)
 
 def update_course(code, timeout_secs, n_tries):
