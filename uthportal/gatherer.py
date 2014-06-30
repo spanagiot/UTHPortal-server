@@ -57,6 +57,7 @@ logger = logging.getLogger(__name__)
 
 from library.food import fetch_food_menu
 from library.inf import fetch_general_announcements, update_course
+from library.uth import update_rss
 from library.util import fetch_html, get_bsoup
 
 from pymongo import MongoClient
@@ -143,7 +144,7 @@ def main():
 def fetch_courses(n_workers=1, timeout_secs=10, n_tries=3):
     """
     """
-    logger.debug('Will now fetch the courses');
+    logger.debug('Will now fetch the courses')
     codes = [ course['code'] for course in db.inf.courses.find() ]
 
     # Initialize a pool of 'n_workers' greenlets
@@ -157,9 +158,26 @@ def fetch_courses(n_workers=1, timeout_secs=10, n_tries=3):
 
     worker_pool.join()
 
-
 def fetch_course(code, *args, **kargs):
     fetch_courses( [ code ], *args, **kargs)
+
+
+@sched.interval_schedule(minutes=10)
+def fetch_uth_rss(n_workers=1, timeout_secs=10, n_tries=3):
+    """
+    """
+    logger.debug('Will now fetch announcements')
+    types = [ rss['type'] for rss in db.uth.rss.find() ]
+
+    # Initialize a pool of 'n_workers' greenlets
+    n_workers = len(types)
+    worker_pool = Pool(n_workers)
+
+    # Enqueue the tasks
+    for type in types:
+        worker_pool.spawn( update_rss, type, timeout_secs, n_tries )
+
+    worker_pool.join()
 
 
 if __name__ == '__main__':
