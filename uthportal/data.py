@@ -153,24 +153,27 @@ uth_rss = { }
 uth_rss_suffix = '?format=feed&type=rss'
 
 uth_rss['news'] = {
-    'type' : 'news',
-    'link' : 'http://uth.gr/news' + uth_rss_suffix,
-    'title' : u'Νέα Πανεπιστημίου Θεσσαλίας',
-    'contents' : [ ]
+    'type': 'news',
+    'link': 'http://uth.gr/news' + uth_rss_suffix,
+    'title': u'Νέα Πανεπιστημίου Θεσσαλίας',
+    'contents': [ ],
+    'last_updated': u''
 }
 
 uth_rss['events'] = {
-    'type' : 'events',
-    'link' : 'http://uth.gr/events' + uth_rss_suffix,
-    'title' : u'Προσεχείς Εκδηλώσεις Π.Θ',
-    'contents' : [ ]
+    'type': 'events',
+    'link': 'http://uth.gr/events' + uth_rss_suffix,
+    'title': u'Προσεχείς Εκδηλώσεις Π.Θ',
+    'contents': [ ],
+    'last_updated': u''
 }
 
 uth_rss['genannounce'] = {
-    'type' : 'genannounce',
-    'link' : 'http://uth.gr/genannounce' + uth_rss_suffix,
-    'title' : u'Γενικές Ανακοινώσεις Π.Θ',
-    'contents' : [ ]
+    'type': 'genannounce',
+    'link': 'http://uth.gr/genannounce' + uth_rss_suffix,
+    'title': u'Γενικές Ανακοινώσεις Π.Θ',
+    'contents': [ ],
+    'last_updated': u''
 }
 
 ### Init collections ###################################
