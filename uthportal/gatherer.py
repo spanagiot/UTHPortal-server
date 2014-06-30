@@ -90,18 +90,26 @@ def health_check():
 
 
 def init_db():
-    from data import courses_data
+    from data import instructions
 
     # TODO: Check if db exists(else create), collections, documents, etc
+    for (db_path, (db_entry, query)) in instructions.items():
+        for (key, document) in db_entry.items():
+            # Unique query to find the document
+            find_query = { query : key }
 
-    for course in courses_data:
-        find_query = { 'code' : course }
+            # Number of entries of that query
+            n_entries = db[db_path].find(find_query).count()
 
-        if db['inf.courses'].find(find_query).count() > 0:
-            # TODO UPDATE
-            pass
-        else:
-            db['inf.courses'].insert(courses_data[course])
+            if n_entries == 0:
+                db[db_path].insert(document)
+            elif n_entries == 1:
+                # TODO UPDATE here
+                logger.debug('[TODO] DB Entry already exists: "%s.%s"' \
+                        % (db_path, key))
+            else:
+                logger.warning('Multiple documents with same find query\n \
+                        "%s" in "%s"' % (find_query, db_path) )
 
 def init():
     """
@@ -128,7 +136,7 @@ def main():
     try:
         sched.start()
     except (KeyboardInterrupt):
-        logger.debug('Terminating...')
+        logger.debug('>> Got SIGTERM! Terminating...')
 
 
 @sched.interval_schedule(minutes=10)
