@@ -154,25 +154,28 @@ uth_rss_suffix = '?format=feed&type=rss'
 
 uth_rss['news'] = {
     'type': 'news',
-    'link': 'http://uth.gr/news' + uth_rss_suffix,
+    'link': 'http://uth.gr/news',
+    'link_suffix': uth_rss_suffix,
     'title': u'Νέα Πανεπιστημίου Θεσσαλίας',
-    'contents': [ ],
+    'entries': [ ],
     'last_updated': u''
 }
 
 uth_rss['events'] = {
     'type': 'events',
-    'link': 'http://uth.gr/events' + uth_rss_suffix,
+    'link': 'http://uth.gr/events',
+    'link_suffix': uth_rss_suffix,
     'title': u'Προσεχείς Εκδηλώσεις Π.Θ',
-    'contents': [ ],
+    'entries': [ ],
     'last_updated': u''
 }
 
 uth_rss['genannounce'] = {
     'type': 'genannounce',
-    'link': 'http://uth.gr/genannounce' + uth_rss_suffix,
+    'link': 'http://uth.gr/genannounce',
+    'link_suffix': uth_rss_suffix,
     'title': u'Γενικές Ανακοινώσεις Π.Θ',
-    'contents': [ ],
+    'entries': [ ],
     'last_updated': u''
 }
 
