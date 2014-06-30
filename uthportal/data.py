@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
+### inf.courses ########################################
 courses_data = { }
-
 
 courses_data['ce120'] = {
     'code': 'ce120',
@@ -147,4 +147,37 @@ courses_data['ce538'] = {
     }
 }
 
+### uth.rss ############################################
 
+uth_rss = { }
+uth_rss_suffix = '?format=feed&type=rss'
+
+uth_rss['news'] = {
+    'type' : 'news',
+    'link' : 'http://uth.gr/news' + uth_rss_suffix,
+    'title' : u'Νέα Πανεπιστημίου Θεσσαλίας',
+    'contents' : [ ]
+}
+
+uth_rss['events'] = {
+    'type' : 'events',
+    'link' : 'http://uth.gr/events' + uth_rss_suffix,
+    'title' : u'Προσεχείς Εκδηλώσεις Π.Θ',
+    'contents' : [ ]
+}
+
+uth_rss['genannounce'] = {
+    'type' : 'genannounce',
+    'link' : 'http://uth.gr/genannounce' + uth_rss_suffix,
+    'title' : u'Γενικές Ανακοινώσεις Π.Θ',
+    'contents' : [ ]
+}
+
+### Init collections ###################################
+
+## Structure
+## 'database-path' : ( dict-of-documents, id-key-of-document )
+instructions = {
+        'inf.courses' : ( courses_data, 'code' ),
+        'uth.rss' : ( uth_rss, 'type' )
+}
