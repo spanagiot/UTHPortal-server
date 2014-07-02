@@ -386,8 +386,19 @@ def update_course(code, timeout_secs, n_tries):
         logger.warning('[%s] %s' % (code, ex) )
         return False
 
-    logger.debug('[%s] Updating database...' % code)
+    # Add the 'title' entry when is not already
+    # NOTE: If title entry is not present then title
+    # is set as COURSE-CODE - DATE-OF-ANNOUNCEMENT
+    try:
+        for entry in data:
+            if 'title' not in entry:
+                entry['title'] = '%s - %s' % (code.upper(), \
+                        entry['date'].strftime('%2d/%2m/%4Y'))
+    except Exception as ex:
+        logger.warning('[%s] %s' % (code, ex) )
+        return False
 
+    logger.debug('[%s] Updating database...' % code)
     # If data are valid update the db
     if data is not None:
         try:
