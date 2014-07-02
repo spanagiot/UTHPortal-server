@@ -14,7 +14,7 @@ app = flask.Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config['JSON_SORT_KEYS'] = True
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-app.debug = True
+#app.debug = True
 
 HTTPCODE_NOT_FOUND = 404
 HTTPCODE_NOT_IMPLEMENTED = 501
@@ -35,6 +35,7 @@ class BSONEncoderEx(JSONEncoder):
         else:
             return JSONEncoder.default(self, obj, **kwargs)
 
+# Set the default flask app encoder to the above encoder
 app.json_encoder = BSONEncoderEx
 
 @app.route('/inf/courses/all')
@@ -56,9 +57,6 @@ def show_courses():
 def show_course(course_name):
     db_doc = db.inf.courses.find_one({'code':course_name })
 
-    for (i, item) in enumerate(db_doc['announcements']['site']):
-        db_doc['announcements']['site'][i]['plaintext'] = BeautifulSoup(item['html']).text
-
     if isinstance(db_doc, dict):
         return flask.jsonify(db_doc)
     else:
@@ -67,9 +65,6 @@ def show_course(course_name):
 @app.route('/inf/announcements')
 def show_announcements():
     db_doc = db.inf.announcements.find_one()
-
-    #for(i, item) in enumerate(db_doc['announcements']):
-     #   db_doc['announcements'][i]['plaintext'] = BeautifulSoup(item['html']).text
 
     if isinstance(db_doc, dict):
         return flask.jsonify(db_doc)
