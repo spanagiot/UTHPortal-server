@@ -128,10 +128,10 @@ def ce120(bsoup):
             parts.append( unicode(part).encode('utf-8') )
 
         # convert list to unicode
-        announce_html = (''.join( parts )).strip()
+        html = (''.join( parts )).strip()
 
         # Add the new announcement as dictionary
-        announce_list.append( {'date':date, 'html':announce_html, 'has_time': False } )
+        announce_list.append( {'date':date, 'html':html, 'plaintext': html.text.strip(), 'has_time': False } )
 
     # Return the list of announcements
     return announce_list
@@ -181,8 +181,8 @@ def ce121(bsoup):
     # Create the final list
     announce_list = [ {'title': element.span.extract().text.encode('utf8'), \
                         'date': datetime.strptime(element.text.strip(), '%d/%m/%Y'), 'has_time': False, \
-                        'html': htmls[i].encode('utf8').strip() } for (i, element) in enumerate(dates_titles) ]
-
+                        'html': htmls[i].encode('utf8').strip(), \
+                        'plaintext': htmls[i].text.strip() } for (i, element) in enumerate(dates_titles) ]
 
     return announce_list
 
@@ -216,8 +216,8 @@ def ce213(bsoup):
     dates = [ datetime.strptime(date.text.strip(' .'), '%d/%m/%Y') \
                 for date in dates ]
 
-    return [ { 'date':date, 'html': html.encode('utf8'), 'has_time': False } \
-            for (date, html) in zip(dates, htmls) ]
+    return [ { 'date':date, 'html': html.encode('utf8'), 'has_time': False, \
+            'plaintext': html.text.strip() } for (date, html) in zip(dates, htmls) ]
 
 
 def ce230(bsoup):
@@ -275,7 +275,8 @@ def ce232(bsoup):
         contents.append( content.strip() )
 
     # return the date/content tuples
-    return [ {'date':date, 'html':html, 'has_time': False} for (date, html) in zip(dates,contents) ]
+    return [ {'date':date, 'html':html, 'plaintext': html.text.stip(), 'has_time': False} \
+                                                    for (date, html) in zip(dates,contents) ]
 
 def ce321(bsoup):
     """
@@ -323,7 +324,8 @@ def ce536(bsoup):
     """
     dates = [datetime.strptime(date_element.text.strip(), '%d/%m/%Y') for date_element in bsoup.select('dt > b')]
     contents = [ann_element.text.strip() for ann_element in bsoup.select('dt + dd')]
-    return [ {'date': date, 'html': html, 'has_time': False} for (date, html) in zip(dates, contents) ]
+    return [ {'date': date, 'html': html, 'plaintext': html.text.strip(), 'has_time': False} \
+                                                for (date, html) in zip(dates, contents) ]
 
 def ce538(bsoup):
     """
