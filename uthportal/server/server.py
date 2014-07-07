@@ -71,6 +71,15 @@ def show_announcements():
     else:
         flask.abort(HTTPCODE_NOT_IMPLEMENTED)
 
+@app.route('/uth/rss/<type>')
+def show_uth_announcements():
+    db_doc = db.uth.rss.find({'type': type})
+
+    if isinstance(db_doc, dict):
+        return flask.jsonify(db_doc)
+    else:
+        flask.abort(HTTPCODE_NOT_IMPLEMENTED)
+
 @app.route('/uth/food-menu')
 def show_food_menu():
     _monday = (datetime.now() - timedelta(datetime.now().weekday())).date()
