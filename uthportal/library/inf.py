@@ -178,8 +178,11 @@ def ce121(bsoup):
 
     # Find all announcements html
     htmls = announce_region.find_all('ul', class_='nb')
-    # Remove the ul 'outer' tag
+
+    # Remove the ul 'outer' tag and create the plaintext entry
+    plaintexts = [ ]
     for (i, html) in enumerate(htmls):
+        plaintexts.append(html.text.strip())
         html = unicode(html).replace('<ul class="nb">', '')
         html = unicode(html).replace('</ul>', '')
         htmls[i] = html
@@ -188,7 +191,7 @@ def ce121(bsoup):
     announce_list = [ {'title': element.span.extract().text.encode('utf8'), \
                         'date': datetime.strptime(element.text.strip(), '%d/%m/%Y'), 'has_time': False, \
                         'html': htmls[i].encode('utf8').strip(), \
-                        'plaintext': htmls[i].text.strip() } for (i, element) in enumerate(dates_titles) ]
+                        'plaintext': plaintexts[i] } for (i, element) in enumerate(dates_titles) ]
 
     return announce_list
 
@@ -271,18 +274,27 @@ def ce232(bsoup):
     dates = [datetime.strptime(date, '%d/%m/%Y') for date in dates_raw]
 
     contents = []
+    plaintexts = []
 
     # create a list of the announcement html contents
     dd_contents = bsoup.find_all('dd')
     for dd_elements in dd_contents:
         content = u''
+        plaintext = u''
         for element in dd_elements:
             content += unicode(element)
+
+            if hasattr(element, 'text'):
+                plaintext += element.text
+            else:
+                plaintext += unicode(element)
+
         contents.append( content.strip() )
+        plaintexts.append( plaintext )
 
     # return the date/content tuples
-    return [ {'date':date, 'html':html, 'plaintext': html.text.stip(), 'has_time': False} \
-                                                    for (date, html) in zip(dates,contents) ]
+    return [ {'date':date, 'html':html, 'plaintext': plaintext, 'has_time': False} \
+                                    for (date, html, plaintext) in zip(dates, contents, plaintexts) ]
 
 def ce321(bsoup):
     """
