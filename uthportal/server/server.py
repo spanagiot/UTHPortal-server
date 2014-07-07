@@ -72,8 +72,8 @@ def show_announcements():
         flask.abort(HTTPCODE_NOT_IMPLEMENTED)
 
 @app.route('/uth/rss/<type>')
-def show_uth_announcements():
-    db_doc = db.uth.rss.find({'type': type})
+def show_uth_announcements(type):
+    db_doc = db.uth.rss.find_one({'type': type})
 
     if isinstance(db_doc, dict):
         return flask.jsonify(db_doc)
