@@ -120,18 +120,24 @@ def ce120(bsoup):
         date = datetime.strptime(date_string , '%d/%m/%Y')
 
         # Get the parts of the announcement
-        parts = []
+        html_parts = []
+        plaintext_parts = []
         for part in announce.next_siblings:
             if part.name is 'span' or part.name is 'p':
                 break
-            #print unicode(part)
-            parts.append( unicode(part).encode('utf-8') )
+
+            html_parts.append( part.encode('utf8'))
+            if hasattr(part, 'text'):
+                plaintext_parts.append( part.text.strip() )
+            else:
+                plaintext_parts.append( part )
 
         # convert list to unicode
-        html = (''.join( parts )).strip()
+        html = (''.join( html_parts )).strip()
+        plaintext = (''.join( plaintext_parts )).strip()
 
         # Add the new announcement as dictionary
-        announce_list.append( {'date':date, 'html':html, 'plaintext': html.text.strip(), 'has_time': False } )
+        announce_list.append( {'date':date, 'html':html, 'plaintext': plaintext, 'has_time': False } )
 
     # Return the list of announcements
     return announce_list
