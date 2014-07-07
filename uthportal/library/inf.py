@@ -323,9 +323,10 @@ def ce536(bsoup):
     Course: Εργαστήριο Αναλογικών Συστημάτων VLSI
     """
     dates = [datetime.strptime(date_element.text.strip(), '%d/%m/%Y') for date_element in bsoup.select('dt > b')]
-    contents = [ann_element.text.strip() for ann_element in bsoup.select('dt + dd')]
-    return [ {'date': date, 'html': html, 'plaintext': html.text.strip(), 'has_time': False} \
-                                                for (date, html) in zip(dates, contents) ]
+    htmls = [ann_element.encode('utf8') for ann_element in bsoup.select('dt + dd')]
+    titles = [ann_element.text.strip() for ann_element in bsoup.select('dt + dd')]
+    return [ {'date': date, 'html': html, 'plaintext': title, 'has_time': False} \
+                                    for (date, html, title) in zip(dates, htmls, titles) ]
 
 def ce538(bsoup):
     """
