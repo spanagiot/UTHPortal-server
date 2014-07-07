@@ -26,13 +26,18 @@ def normalize_rss(entries):
     We remove the title from description
     """
     for entry in entries:
-        entry['content'] = get_bsoup(entry['content'])
-        entry['content'].strong.extract()
-        entry['content'].div.extract()
+        bsoup = get_bsoup(entry['html'])
+        # Remove unwanted data
+        bsoup.strong.extract()
+        bsoup.div.extract()
+
+        entry['html'] = bsoup
+        entry['plaintext'] = bsoup.text.strip()
 
         # Encode the values
         for key in entry:
-            entry[key] = entry[key].encode('utf8')
+            if not isinstance(entry[key], unicode):
+                entry[key] = entry[key].encode('utf8')
 
     return entries
 
@@ -90,7 +95,7 @@ def update_rss(type, timeout_secs, n_tries):
             return False
 
         # Create rss dict we need
-        entries = [ {'title': entry.title, 'content': entry.description } \
+        entries = [ {'title': entry.title, 'html': entry.description, 'plaintext': u'' } \
                 for entry in rss.entries ]
 
     # Prettify/normalize rss
@@ -98,7 +103,6 @@ def update_rss(type, timeout_secs, n_tries):
         n_entries = normalize_rss(entries)
     except Exception as ex:
         logger.error('[%s] %s' % (type, ex))
-        print ex
     else:
         if n_entries is None:
             logger.warning('[%s] Normalized failed', type)
@@ -117,7 +121,8 @@ def update_rss(type, timeout_secs, n_tries):
         return False
     else:
         logger.debug('[%s] Successfull update!' % type)
-        return True
+
+    return True
 
 """
 if __name__ == '__main__':
@@ -125,5 +130,6 @@ if __name__ == '__main__':
 
     for entry in entries:
         print 'title: ' + entry['title']
-        print 'desc : ' + entry['content']
+        print 'desc : ' + entry['html']
+        print 'plaintext:' + entry['plaintext']
 """
