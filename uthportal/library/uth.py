@@ -7,6 +7,7 @@ import logging
 import feedparser
 
 from datetime import datetime
+from time import mktime
 from pymongo import MongoClient
 from util import fetch_html, get_bsoup
 
@@ -35,9 +36,8 @@ def normalize_rss(entries):
         entry['plaintext'] = bsoup.text.strip()
 
         # Encode the values
-        for key in entry:
-            if not isinstance(entry[key], unicode):
-                entry[key] = entry[key].encode('utf8')
+        for key in [ 'html', 'plaintext' ]:
+            entry[key] = entry[key].encode('utf8')
 
     return entries
 
@@ -94,9 +94,12 @@ def update_rss(type, timeout_secs, n_tries):
             logger.warning('[%s] Empty RSS dictionary')
             return False
 
+        # Datetime format
+        # dt_format = '%a, %d %b %Y %H:%M:%S %z'
+
         # Create rss dict we need
-        entries = [ {'title': entry.title, 'html': entry.description, 'plaintext': u'' } \
-                for entry in rss.entries ]
+        entries = [ {'title': entry.title, 'html': entry.description, 'plaintext': u'', \
+                'date': datetime.fromtimestamp(mktime(entry.published_parsed)) } for entry in rss.entries ]
 
     # Prettify/normalize rss
     try:
@@ -131,5 +134,6 @@ if __name__ == '__main__':
     for entry in entries:
         print 'title: ' + entry['title']
         print 'desc : ' + entry['html']
-        print 'plaintext:' + entry['plaintext']
+        print 'plaintext: ' + entry['plaintext']
+        print 'datetime: %s' % entry['date']
 """
