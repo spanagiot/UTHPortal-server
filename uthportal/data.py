@@ -147,6 +147,18 @@ courses_data['ce538'] = {
     }
 }
 
+### inf.announce ############################################
+
+inf_announce = { }
+
+inf_announce['genannounce'] = {
+    'type': 'genannounce',
+    'link': 'http://www.inf.uth.gr/cced/?cat=24',
+    'title': u'Γενικές Ανακοινώσεις',
+    'entries': [ ],
+    'last_updated': u''
+}
+
 ### uth.rss ############################################
 
 uth_rss = { }
@@ -185,5 +197,6 @@ uth_rss['genannounce'] = {
 ## 'database-path' : ( dict-of-documents, id-key-of-document )
 instructions = {
         'inf.courses' : ( courses_data, 'code' ),
+        'inf.announce': (inf_announce, 'type'),
         'uth.rss' : ( uth_rss, 'type' )
 }
