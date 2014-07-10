@@ -504,6 +504,10 @@ def announcements_general(bsoup):
         #join all paragraps to a single html
         announcement['html'] = '\n'.join( [unicode(p) for p in paragraphs] )
 
+        # get the plaintext from html
+        bsoup = get_bsoup(announcement['html'])
+        announcement['plaintext'] = bsoup.text.strip()
+
         #add to announcements
         announcements.append( announcement )
 
@@ -518,16 +522,38 @@ def announcements_graduates():
     pass
 
 def fetch_general_announcements():
-    link = 'http://www.inf.uth.gr/cced/?cat=24'
+    type = 'genannounce'
 
+    # Set the query
+    query = { 'type' : type }
+
+    try:# Read from DB links
+        records = db.inf.announce.find(query)
+
+        if records.count() is 0:
+            logger.error('[%s] No document found' % type)
+            return False
+
+        if records.count() > 1:
+            logger.warning('[%s] Multiple documents found' % type)
+
+        link = records[0]['link']
+        if link is None:
+            logger.warning('[%s] Document does not have "link" field' % type)
+            return False
+    except Exception as ex:
+        logger.warning('[%s] %s' % (type, ex))
+        return False
+
+    logger.debug('Fetching announcements...')
     try:
         html = fetch_html(link)
         if html is None:
-            logger.warning('[GEN-ANN] Empty HTML')
+            logger.warning('[%s] Empty HTML' % type)
             return
 
     except Exception as ex:
-        logger.warning('[GEN-ANN] %s' % ex)
+        logger.warning('[%s] %s' % (type, ex))
         return
 
     bsoup = get_bsoup(html)
@@ -537,23 +563,22 @@ def fetch_general_announcements():
     try:
         ann_list = announcements_general(bsoup)
     except Exception as ex:
-        logger.warning('[GEN-ANN] %s' % ex)
+        logger.warning('[%s] %s' % (type, ex))
         return
 
     # Create the dictionary
     db_doc = { }
-    db_doc['name'] = 'announcements_general'
-    db_doc['link'] = link
-    db_doc['announcements'] = ann_list
+    db_doc['entries'] = ann_list
+    db_doc['last_updated'] = datetime.now()
 
     # Update the database
-    find_query = { 'name' : 'announcements_general' }
+    find_query = { 'type' : type }
     update_query = { '$set' : db_doc }
 
     try:
-        db.inf.announcements.update(find_query, update_query, upsert=True)
+        db.inf.announce.update(find_query, update_query)
     except Exception as ex:
-        logger.error('[GEN-ANN] %s' % ex)
+        logger.error('[%s] %s' % (type, ex))
 
 
 ### testing code
@@ -574,8 +599,8 @@ def test_fetch_course_links():
 
 ### /testing code
 
-
 if __name__ == '__main__':
     """
     """
     test_announcements()
+    #fetch_general_announcements()
