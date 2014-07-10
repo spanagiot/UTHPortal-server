@@ -62,9 +62,9 @@ def show_course(course_name):
     else:
         flask.abort(HTTPCODE_NOT_FOUND)
 
-@app.route('/inf/announcements')
-def show_announcements():
-    db_doc = db.inf.announcements.find_one()
+@app.route('/inf/announce/<type>')
+def show_inf_announcements(type):
+    db_doc = db.inf.announce.find_one({'type': type})
 
     if isinstance(db_doc, dict):
         return flask.jsonify(db_doc)
